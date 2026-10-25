@@ -117,8 +117,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(page)))
             self.end_headers()
             self.wfile.write(page)
+        elif self.path == "/healthz":          # Render health check
+            self._json({"ok": True})
         else:
-            self.send_error(404)
+            self._json({"error": "not found"}, 404)
 
     def do_POST(self):
         try:
@@ -138,7 +140,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"error": "empty text"}, 400)
                 self._json({"audio": tts(data["text"], str(data.get("speaker", "ritu")))})
             else:
-                self.send_error(404)
+                self._json({"error": "not found"}, 404)
         except Exception as exc:  # noqa: BLE001 — fail soft so the demo never dies
             self._json({"error": str(exc)}, 502)
 
@@ -149,4 +151,4 @@ if __name__ == "__main__":
         raise SystemExit("SARVAM_API_KEY missing in ../.env")
     port = int(os.environ.get("PORT", "8000"))
     print(f"Udhaar Dost live on http://localhost:{port}  (Sarvam: Saaras STT + 105B-Convos + Bulbul TTS)")
-    ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
+    ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()

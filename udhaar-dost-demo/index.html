@@ -3,169 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="उधार दोस्त — किराने की दुकान का आवाज़ वाला उधार-खाता। बोलकर एंट्री, पॉलिट AI रिमाइंडर कॉल, वादे का हिसाब।">
 <title>उधार दोस्त — Voice-First Credit Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!--
+  Design system: the bahi-khata (red-cloth credit notebook).
+  cloth/gold = the book cover, page = ledger sheet, --rule = the red margin rule,
+  steel = chalk-green. Numbers right-align toward the margin rule; totals carry
+  the bahi double-rule. One bold element: the turmeric mic.
+-->
 <style>
   :root{
-    --ink:#2b2118; --paper:#fdf6ec; --card:#ffffff; --saffron:#ff9933; --green:#1a7f4b;
-    --red:#c0392b; --indigo:#3b3486; --soft:#8d7f70; --line:#eadfce;
+    --cloth:#7a1f1f; --cloth-hi:#8e2a2a; --gold:#d9a54c; --gold-hi:#e8c36a;
+    --page:#f6efdf; --page-lo:#efe5cf; --ink:#26221b; --ink-lo:#6f6354;
+    --rule:#c24a3b; --steel:#1f5f5b; --steel-hi:#2b7a74; --turmeric:#d98e04;
+    --brick:#a93226; --hair:#d8cbb2;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--paper);color:var(--ink);padding-bottom:60px}
-  header{background:linear-gradient(120deg,#2b2118,#4a3423);color:#fff;padding:18px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .logo{font-size:30px;background:#fff3;border-radius:14px;padding:6px 10px}
-  header h1{font-size:22px}
-  header .sub{font-size:13px;opacity:.85}
-  .guardrail{margin-left:auto;font-size:11.5px;background:#ffffff22;border:1px solid #ffffff33;border-radius:20px;padding:6px 12px}
-  nav{display:flex;gap:6px;padding:10px 18px;background:#fff;border-bottom:2px solid var(--line);flex-wrap:wrap;position:sticky;top:0;z-index:5}
-  nav button{border:1px solid var(--line);background:#faf3e6;border-radius:22px;padding:9px 16px;font-size:14px;cursor:pointer;font-weight:600;color:var(--ink)}
-  nav button.active{background:var(--saffron);color:#fff;border-color:var(--saffron)}
-  main{max-width:960px;margin:0 auto;padding:20px 16px}
-  section{display:none}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;
+    background:var(--page-lo); color:var(--ink);
+    font-size:15px; line-height:1.55; padding-bottom:64px;
+  }
+  .display{font-family:'Tiro Devanagari Hindi',serif;font-weight:400}
+
+  /* ---------- the book cover ---------- */
+  header{
+    background:var(--cloth); color:var(--gold-hi);
+    padding:34px 22px 30px; text-align:left;
+  }
+  .cover-in{max-width:960px;margin:0 auto;position:relative}
+  header h1{
+    font-family:'Tiro Devanagari Hindi',serif; font-weight:400;
+    font-size:clamp(34px,5.5vw,52px); line-height:1.1; letter-spacing:.5px;
+    text-shadow:0 2px 0 rgba(0,0,0,.28);
+  }
+  header h1 small{
+    font-family:'Noto Sans Devanagari',sans-serif; font-size:13px; font-weight:500;
+    color:var(--gold); letter-spacing:.4px; display:block; margin-top:6px;
+    text-shadow:none;
+  }
+  header .sub{max-width:56ch; margin-top:14px; font-size:15px; color:#f3e4c8; line-height:1.6}
+  .stamps{display:flex; gap:10px; flex-wrap:wrap; margin-top:20px}
+  .stamp{
+    font-size:12px; line-height:1.35; padding:7px 12px; color:var(--gold);
+    border:1.5px solid rgba(217,165,76,.55); border-radius:3px;
+    background:rgba(0,0,0,.14);
+  }
+  .stamp b{color:var(--gold-hi); font-weight:700}
+
+  /* ---------- leaf bookmark tabs + the ledger sheet ---------- */
+  .book{max-width:960px;margin:0 auto;padding:0 16px}
+  nav#nav{
+    display:flex; gap:6px; position:sticky; top:0; z-index:5;
+    padding:14px 10px 0; overflow-x:auto; scrollbar-width:none; background:transparent;
+  }
+  nav#nav::-webkit-scrollbar{display:none}
+  nav#nav button{
+    font-family:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
+    color:#f0e4cd; background:rgba(0,0,0,.10);
+    border:none; border-bottom:none; border-radius:7px 7px 0 0;
+    padding:10px 15px 11px; white-space:nowrap;
+  }
+  nav#nav button.active{
+    color:var(--ink); background:var(--page);
+    font-weight:700; padding-bottom:12px; margin-bottom:-1px; position:relative;
+  }
+  nav#nav button:focus-visible{outline:2px solid var(--gold-hi); outline-offset:-2px}
+  main{
+    background:var(--page); color:var(--ink);
+    border-radius:0 6px 6px 6px; border:1px solid var(--hair);
+    border-top:none; padding:0 0 28px; min-height:520px;
+  }
+  section{display:none; padding:26px 26px 8px calc(26px)}
   section.active{display:block}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #00000008}
-  .screen-note{font-size:13px;color:var(--soft);margin-bottom:10px}
-  .mic-btn{width:150px;height:150px;border-radius:50%;border:none;background:radial-gradient(circle at 30% 25%,#ffbb66,#f2801a);color:#fff;font-size:44px;cursor:pointer;box-shadow:0 6px 18px #f2801a55;transition:transform .15s}
-  .mic-btn.rec{animation:pulse 1s infinite;transform:scale(1.06)}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 #f2801a88}50%{box-shadow:0 0 0 18px #f2801a00}}
-  .center{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-  .chip{background:#faf3e6;border:1px dashed var(--saffron);border-radius:16px;padding:7px 12px;font-size:12.5px;cursor:pointer}
-  .wave{display:none;gap:4px;align-items:center;height:34px}
+  /* the red margin rule */
+  section{position:relative}
+  section::before{
+    content:""; position:absolute; left:34px; top:0; bottom:0; width:1.5px;
+    background:var(--rule); opacity:.75;
+  }
+  section > *{margin-left:14px}
+
+  /* inner panels: quiet ink-hairline sheets, not floating cards */
+  .card{
+    background:transparent; border:none; border-bottom:1px solid var(--hair);
+    border-radius:0; padding:2px 0 22px; margin:0 0 20px; box-shadow:none;
+    max-width:72ch;
+  }
+  .card:last-child{border-bottom:none}
+  .screen-note{font-size:12.5px; color:var(--ink-lo); margin-bottom:10px; max-width:70ch}
+
+  /* ---------- hero: the shopkeeper speaks ---------- */
+  .hero{display:flex; flex-direction:column; gap:18px; padding-top:8px}
+  .hero .display{font-size:clamp(30px,4.6vw,42px); line-height:1.18; max-width:20ch; color:var(--cloth)}
+  .hero p{max-width:60ch; color:var(--ink)}
+  .mic-btn{
+    width:148px; height:148px; border-radius:50%; border:6px solid var(--page);
+    outline:1.5px solid var(--ink-lo); outline-offset:6px;
+    background:var(--turmeric); color:#fff; font-size:42px; cursor:pointer;
+    transition:transform .15s;
+    align-self:flex-start; margin-left:-2px;
+  }
+  .mic-btn:hover{transform:scale(1.03)}
+  .mic-btn:focus-visible{outline:3px solid var(--steel); outline-offset:4px}
+  .mic-btn.rec{animation:pulse 1s infinite; transform:scale(1.05)}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,142,4,.7)}50%{box-shadow:0 0 0 20px rgba(217,142,4,0)}}
+  #miclabel{font-weight:700; font-size:14.5px}
+  .wave{display:none; gap:4px; align-items:center; height:34px}
   .wave.on{display:flex}
-  .wave span{width:5px;background:var(--saffron);border-radius:3px;animation:w 1s infinite ease-in-out}
-  @keyframes w{0%,100%{height:8px}50%{height:30px}}
-  .asr{font-family:monospace;background:#fff8ef;border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:44px;width:100%;font-size:15px}
-  .readback{background:#eef7f1;border:1px solid #bcd9c8;border-radius:12px;padding:12px 14px;font-size:15px}
-  .slot{font-weight:700;color:var(--green)}
-  .btn{border:none;border-radius:12px;padding:10px 18px;font-size:14.5px;font-weight:700;cursor:pointer;background:var(--green);color:#fff}
-  .btn.sec{background:#efe6d8;color:var(--ink)}
-  .btn.warn{background:var(--red)}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--soft);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line)}
-  td{padding:10px;border-bottom:1px solid #f2ead9}
-  .tag{border-radius:12px;padding:3px 10px;font-size:11.5px;font-weight:700;white-space:nowrap}
-  .t-open{background:#fde8cc;color:#a35c00}
-  .t-prom{background:#d9ede2;color:var(--green)}
-  .t-over{background:#f9dbd7;color:var(--red)}
-  .t-paid{background:#e5e5e5;color:#555}
-  .callbtn{background:#eef2ff;color:var(--indigo);border:none;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:12.5px}
-  .phone{max-width:420px;margin:0 auto;background:#111;color:#eee;border-radius:26px;padding:16px 14px;min-height:480px;display:flex;flex-direction:column}
-  .ph-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #333;font-size:13px;color:#9ad0a0}
-  .ph-body{flex:1;overflow-y:auto;padding:12px 2px;display:flex;flex-direction:column;gap:8px;max-height:360px}
-  .bub{max-width:85%;padding:10px 13px;border-radius:16px;font-size:13.8px;line-height:1.5;white-space:pre-wrap}
-  .ai{background:#1f6f4a;color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
-  .cust{background:#2a2a2a;color:#ffd9a8;align-self:flex-end;border-bottom-right-radius:4px}
-  .sys{align-self:center;font-size:11px;color:#888;background:#1b1b1b;border-radius:10px;padding:5px 10px;text-align:center}
-  .ph-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid #333}
-  .ph-actions button{flex:1;min-width:45%;background:#26331f;color:#c2f0a9;border:1px solid #3a4a2e;border-radius:10px;padding:9px 6px;font-size:12.5px;cursor:pointer}
-  .dig-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
-  .stat .n{font-size:30px;font-weight:800}
-  .stat .l{font-size:12px;color:var(--soft);margin-top:4px}
-  .fest{background:linear-gradient(120deg,#7b1e3c,#a2314e);color:#ffe6b0;border-radius:16px;padding:16px 18px;margin-bottom:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .switch{position:relative;width:46px;height:24px;flex:none}
-  .switch input{opacity:0;width:0;height:0}
-  .sl{position:absolute;inset:0;background:#555;border-radius:20px;cursor:pointer;transition:.2s}
-  .sl:before{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
-  .switch input:checked+.sl{background:#ffcf5c}
-  .switch input:checked+.sl:before{transform:translateX(22px)}
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;display:none;z-index:9}
-  .upi{background:#34675b;color:#b8f5d8;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer;border:none;font-size:13px}
-  .small{font-size:12px;color:var(--soft)}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .wave span{width:4.5px;background:var(--steel-hi);border-radius:3px;animation:w 1s infinite ease-in-out}
+  .wave span:nth-child(odd){animation-delay:.2s}
+  .wave span:nth-child(3n){animation-delay:.35s}
+  @keyframes w{0%,100%{height:7px}50%{height:30px}}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; max-width:70ch}
+  .chip{
+    font-family:inherit; font-size:12.5px; text-align:left; cursor:pointer;
+    background:var(--page); color:var(--ink-lo);
+    border:1px dashed var(--rule); border-radius:3px; padding:8px 12px;
+  }
+  .chip:hover{color:var(--ink); border-style:solid}
+  .chip:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
+
+  .asr{
+    font-family:inherit; background:#fffcf3; border:1px solid var(--hair);
+    border-radius:3px; padding:11px 14px; min-height:46px; width:100%; font-size:15px;
+    line-height:1.6;
+  }
+  .readback{
+    background:#fff; border-left:3px solid var(--steel); padding:13px 14px;
+    font-size:15px; line-height:1.6; max-width:70ch;
+  }
+  .slot{font-weight:700; color:var(--steel)}
+  .btn{
+    font-family:inherit; border:none; border-radius:3px; padding:10px 18px;
+    font-size:14.5px; font-weight:700; cursor:pointer;
+    background:var(--cloth); color:var(--gold-hi);
+  }
+  .btn:hover{background:var(--cloth-hi)}
+  .btn:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
+  .btn.sec{background:transparent; color:var(--ink); border:1.5px solid var(--ink-lo)}
+  .btn.sec:hover{border-color:var(--ink)}
+  .btn:disabled{opacity:.55; cursor:wait}
+
+  /* ---------- ledger tables ---------- */
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th{
+    font-size:11.5px; font-weight:700; color:var(--ink-lo); text-align:left;
+    letter-spacing:.02em; padding:7px 8px; border-bottom:1.5px solid var(--ink-lo);
+  }
+  td{padding:10px 8px; border-bottom:1px solid var(--hair); vertical-align:top}
+  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums}
+  .small{font-size:12px; color:var(--ink-lo)}
+  .tag{
+    display:inline-block; border:1.5px solid currentColor; border-radius:2px;
+    padding:2.5px 8px; font-size:11.5px; font-weight:700; white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .t-open{color:#9a6200; background:#fff}
+  .t-prom{color:var(--steel); background:#fff}
+  .t-over{color:var(--brick); transform:rotate(-1.5deg)}
+  .t-paid{color:#57534a; background:#efece4}
+  .callbtn{
+    font-family:inherit; background:transparent; color:var(--cloth);
+    border:1.5px solid var(--cloth); border-radius:3px; padding:6px 12px;
+    font-weight:700; font-size:12.5px; cursor:pointer;
+  }
+  .callbtn:hover{background:var(--cloth); color:var(--gold-hi)}
+  .callbtn:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
+
+  /* ---------- the phone ---------- */
+  .phone{
+    max-width:430px; margin:0 auto; background:#1d1a16; color:#e9e2d4;
+    border-radius:14px; padding:16px 14px; min-height:480px;
+    display:flex; flex-direction:column; box-shadow:none; border:1px solid #3a352d;
+  }
+  .ph-head{
+    display:flex; align-items:center; gap:10px; padding-bottom:10px;
+    border-bottom:1px solid #3a352d; font-size:12.5px; color:#9db8a5;
+  }
+  .ph-body{flex:1; overflow-y:auto; padding:12px 2px; display:flex; flex-direction:column; gap:8px; max-height:360px}
+  .bub{max-width:85%; padding:10px 13px; border-radius:3px; font-size:13.8px; line-height:1.5; white-space:pre-wrap}
+  .ai{background:var(--steel); color:#fff; align-self:flex-start}
+  .cust{background:#33302a; color:#f0d9af; align-self:flex-end}
+  .sys{align-self:center; font-size:11px; color:#8a8378; background:#14120f; border-radius:2px; padding:5px 10px; text-align:center}
+  .ph-actions{display:flex; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px solid #3a352d}
+  .ph-actions button{
+    font-family:inherit; flex:1; min-width:45%; background:transparent; color:#d9c78c;
+    border:1px solid #4a4438; border-radius:3px; padding:9px 6px; font-size:12.5px; cursor:pointer;
+  }
+  .ph-actions button:hover{border-color:#d9c78c}
+
+  /* ---------- digest: bahi totals with double-rule carry-down ---------- */
+  .folio{max-width:72ch; border-top:2.5px solid var(--ink)}
+  .fr{display:flex; align-items:baseline; gap:14px; padding:13px 2px; border-bottom:1px solid var(--hair)}
+  .fr span{flex:1; font-size:14.5px}
+  .fr b{
+    font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:26px;
+    font-variant-numeric:tabular-nums; text-align:right; color:var(--cloth); min-width:110px;
+  }
+  .fr b.ok{color:var(--steel)}
+  .fr b.warn{color:var(--brick)}
+  .fr i{font-style:normal; font-size:12px; color:var(--ink-lo); min-width:150px; text-align:left}
+  .fr.total{border-bottom:3px double var(--ink)}
+  .fest{
+    background:var(--cloth); color:#f3e4c8; border-radius:3px;
+    padding:16px 18px; margin:0 0 20px; max-width:72ch;
+    display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+  }
+  .fest b{color:var(--gold-hi)}
+  .fest .fsub{font-size:12.5px; line-height:1.6; max-width:60ch}
+  .switch{position:relative; width:46px; height:24px; flex:none}
+  .switch input{opacity:0; width:0; height:0}
+  .sl{position:absolute; inset:0; background:#4d1a1a; border:1px solid rgba(217,165,76,.5); border-radius:24px; cursor:pointer; transition:.2s}
+  .sl:before{content:""; position:absolute; width:16px; height:16px; border-radius:50%; background:var(--gold); top:3px; left:3px; transition:.2s}
+  .switch input:checked+.sl{background:var(--gold)}
+  .switch input:checked+.sl:before{background:var(--cloth); transform:translateX(22px)}
+  .switch input:focus-visible+.sl{outline:2px solid var(--steel-hi); outline-offset:2px}
+  .upi{
+    font-family:inherit; background:var(--steel); color:#fff; border:none; border-radius:3px;
+    padding:9px 14px; font-weight:700; cursor:pointer; font-size:13px;
+  }
+  .upi:focus-visible{outline:2px solid var(--gold-hi); outline-offset:2px}
+
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:var(--ink); color:#fff3; color:#f6efdf; padding:11px 20px;
+    border-radius:3px; font-size:14px; display:none; z-index:9; max-width:92vw;
+  }
+  .center{display:flex; flex-direction:column; gap:12px}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  h2.font{font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:22px; color:var(--cloth)}
+
+  @media (max-width:640px){
+    section{padding:20px 16px 8px}
+    section::before{left:22px}
+    section > *{margin-left:0}
+    .fr i{display:none}
+    .mic-btn{width:130px;height:130px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wave span, .mic-btn.rec{animation:none}
+    html{scroll-behavior:auto}
+  }
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">🎙️</div>
-  <div><h1>उधार दोस्त <span style="font-size:13px;opacity:.7">· Udhaar Dost</span></h1>
-  <div class="sub">Voice-first credit manager for your kirana store — typing not required.</div></div>
-  <div class="guardrail" style="background:#1a7f4b55">⚡ LIVE · Sarvam: Saaras STT → 105B-Convos → Bulbul TTS</div>
-  <div class="guardrail">🛡 Politeness Engine: 2 calls/week · 9 AM–7 PM · No threats · No third-party disclosure</div>
+  <div class="cover-in">
+    <h1>उधार दोस्त<small>· Udhaar Dost · आवाज़ वाला उधार-खाता</small></h1>
+    <p class="sub">किराने की दुकान का क्रेडिट मैनेजर, जो आवाज़ से काम करता है। Shopkeeper बोलता है, खाता बन जाता है; customer को नरम आवाज़ में रिमाइंडर मिलता है; वादे की तारीख़ खुद नोट हो जाती है — typing बिल्कुल नहीं.</p>
+    <div class="stamps">
+      <span class="stamp"><b>★ LIVE</b> — Sarvam pipeline: Saaras STT → 105B-Convos → Bulbul TTS</span>
+      <span class="stamp"><b>★ Politeness</b> — 2 calls/week · 9 AM–7 PM · No threats · No third-party disclosure</span>
+    </div>
+  </div>
 </header>
 
-<nav id="nav">
-  <button data-s="entry" class="active">🎤 Voice Entry</button>
-  <button data-s="ledger">📒 Khata</button>
-  <button data-s="call">📞 Reminder Call</button>
-  <button data-s="digest">🌙 Evening Digest</button>
+<div class="book">
+<nav id="nav" aria-label="खाते के पन्ने">
+  <button data-s="entry" class="active">बोलकर एंट्री</button>
+  <button data-s="ledger">खाता</button>
+  <button data-s="call">रिमाइंडर कॉल</button>
+  <button data-s="digest">शाम का हिसाब</button>
 </nav>
 
 <main>
-<!-- ============ SCREEN 1: VOICE ENTRY ============ -->
+<!-- ============ ROUTE 1: VOICE ENTRY ============ -->
 <section id="entry" class="active">
-  <div class="card center">
-    <div class="screen-note">Step 1 · Shopkeeper speaks a voice note — AI listens and structures it</div>
-    <button id="mic" class="mic-btn" title="Tap to speak">🎤</button>
-    <div id="miclabel" style="font-weight:700">Tap & speak</div>
-    <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span style="animation-delay:.15s"></span><span style="animation-delay:.3s"></span><span style="animation-delay:.45s"></span></div>
-    <div class="chips" id="samples"></div>
+  <div class="hero card">
+    <h2 class="display">बोलो, खता हो गया।</h2>
+    <p>जैसे दुकान पर बोलते हैं, वैसे ही बोलिए — AI सुनकर नाम, रकम, सामान और तारीख़ अलग-अलग समझ लेता है। नीचे नमूने भी लगे हैं, ज़रूरत पड़े तो उनसे आज़माएँ।</p>
+    <div class="center">
+      <button id="mic" class="mic-btn" title="माइक दबाकर बोलिए" aria-label="माइक दबाकर बोलिए">🎤</button>
+      <div id="miclabel">माइक दबाकर बोलिए</div>
+      <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="chips" id="samples" aria-label="नमूना voice notes"></div>
   </div>
   <div class="card" id="parseCard" style="display:none">
-    <div class="screen-note">What the AI heard (ASR — Saaras, code-mixed Hinglish):</div>
-    <div class="asr" id="asrText"></div>
+    <div class="screen-note">Saaras ने जो सुना (code-mixed Hinglish ASR) — चाहें तो ऊपर पाठ बदलकर दुबारा समझवाएँ:</div>
+    <div class="asr" id="asrText" contenteditable="true" spellcheck="false"></div>
     <div style="height:14px"></div>
-    <div class="row"><button class="btn" id="understand">🧠 Samjho (AI structuring)</button><span class="small">or edit the text above, then click — demonstrates live parsing, no hardcoded slots</span></div>
+    <div class="row">
+      <button class="btn" id="understand">105B से समझो</button>
+      <span class="small">असली LLM call — slots ठोस डेटा से बनते हैं, पहले से नहीं लिखे</span>
+    </div>
   </div>
   <div class="card" id="confirmCard" style="display:none">
-    <div class="screen-note">AI structures it & reads it back for confirmation —</div>
+    <div class="screen-note">AI ने ढाँचा बनाकर वापस सुनाया — सही है?</div>
     <div class="readback" id="readback"></div>
     <table id="slotTable" style="margin:12px 0"><tbody></tbody></table>
     <div class="row">
-      <button class="btn" id="confirmAdd">✅ Haan, confirm</button>
-      <button class="btn sec" onclick="location.reload()">✏️ Dobara bolo</button>
+      <button class="btn" id="confirmAdd">हाँ, खता कर दो</button>
+      <button class="btn sec" onclick="location.reload()">नहीं, दुबारा बोलूँगा</button>
     </div>
   </div>
 </section>
 
-<!-- ============ SCREEN 2: LEDGER ============ -->
+<!-- ============ ROUTE 2: LEDGER ============ -->
 <section id="ledger">
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <h2 style="font-size:17px">📒 Aapka Khata</h2>
-      <span class="small">Tap 📞 to send a polite AI reminder — no typing, ever</span>
-    </div>
-    <table style="margin-top:10px"><thead><tr><th>Customer</th><th>Udhaar</th><th>Date</th><th>Status</th><th>AI Calls</th><th></th></tr></thead><tbody id="ledgerBody"></tbody></table>
+    <h2 class="font">आपका खाता</h2>
+    <p class="screen-note">📞 दबाओ तो AI धीमे स्वर में रिमाइंडर भेजेगा। हर ग्राहक पर हफ्ते में अधिक से अधिक 2 कॉल — Politeness Engine खुद रोक लेता है।</p>
+    <table><thead><tr><th>ग्राहक</th><th class="num">उधार</th><th>तारीख़</th><th>हालत</th><th>कॉल</th><th></th></tr></thead><tbody id="ledgerBody"></tbody></table>
   </div>
 </section>
 
-<!-- ============ SCREEN 3: REMINDER CALL ============ -->
+<!-- ============ ROUTE 3: REMINDER CALL ============ -->
 <section id="call">
-  <div class="card">
-    <div id="callSetup">
-      <div class="screen-note">Step 2 · AI places a warm, polite reminder call — customer speaks, AI listens & extracts the promise</div>
-      <div class="row"><button class="btn" id="startCall">📞 AI ko call karne do</button>
-        <span class="small">Guardrail check: first call this week ✓ · within 9 AM–7 PM ✓ · opt-out offered ✓</span></div>
-    </div>
+  <div class="card" id="callSetup">
+    <h2 class="font">रिमाइंडर कॉल</h2>
+    <p class="screen-note">AI ग्राहक को अपनी भाषा में, प्यार से याद दिलाता है। वादा हुआ तो तारीख़ नोट कर लेता है, आपत्ति हुई तो हिस्से का भुगतान ऑफ़र करता है — और कभी खुद से आगे नहीं बढ़ता।</p>
+    <div class="row"><button class="btn" id="startCall">पहली कॉल सुनिए</button>
+      <span class="small">✓ हफ्ते की पहली कॉल &nbsp;·&nbsp; ✓ 9 AM–7 PM विंडो में &nbsp;·&nbsp; ✓ opt-out उपलब्ध</span></div>
   </div>
   <div id="callStage" style="display:none">
     <div class="phone">
-      <div class="ph-head">📞 AI call · <span id="callWho"></span> · recorded for fairness · language: Auto (Hindi/Hinglish)</div>
+      <div class="ph-head">AI कॉल · <span id="callWho"></span> · fairness के लिए रिकॉर्ड · भाषा: Auto (Hindi/Hinglish)</div>
       <div class="ph-body" id="bubbles"></div>
       <div class="ph-actions" id="callActions"></div>
     </div>
-    <div class="card" id="extractCard" style="display:none;margin-top:16px">
-      <div class="screen-note">✨ Extracted from the conversation (LLM intent + entity extraction):</div>
+    <div class="card" id="extractCard" style="display:none;margin-top:20px">
+      <div class="screen-note">बातचीत से निकला डेटा (LLM intent + entity extraction):</div>
       <div id="extracted"></div>
     </div>
-    <div class="center" style="margin-top:10px"><button class="btn sec" onclick="show('digest')">🌙 Shaam ka digest dekho →</button></div>
+    <div class="center"><button class="btn sec" onclick="show('digest')">शाम का हिसाब खोलो</button></div>
   </div>
 </section>
 
-<!-- ============ SCREEN 4: DIGEST ============ -->
+<!-- ============ ROUTE 4: DIGEST ============ -->
 <section id="digest">
   <div id="festWrap"></div>
   <div class="card">
-    <h2 style="font-size:17px;margin-bottom:12px">🌙 शाम का हिसाब <span class="small">· 60-second spoken digest, plays automatically at 8:00 PM</span></h2>
-    <div class="row" style="margin-bottom:14px"><button class="btn" id="playDigest">▶️ Sunao (hear it)</button><span class="asr" id="digestSpoken" style="flex:1;min-width:250px">…</span></div>
-    <div class="dig-grid" id="stats"></div>
-    <div class="card" style="margin:0">
-      <h3 style="font-size:14px;margin-bottom:8px">📌 Follow-up queue — AI calls automatically <b>after</b> the promise date</h3>
-      <table><thead><tr><th>Customer</th><th>Promise</th><th>Follow-up</th><th>Status</th></tr></thead><tbody id="queueBody"></tbody></table>
+    <h2 class="font">शाम का हिसाब</h2>
+    <p class="screen-note">हर शाम 8 बजे 60-सेकंड का मुँह-ज़बानी हिसाब — shopkeeper को बचत होती है पढ़ने की, आवाज़ ही काफ़ी है।</p>
+    <div class="row" style="margin-bottom:18px"><button class="btn" id="playDigest">हिसाब सुनो</button><span class="asr" id="digestSpoken" style="flex:1;min-width:250px">…</span></div>
+    <div class="folio" id="stats"></div>
+    <div class="card">
+      <h3 class="font" style="font-size:17px">अगली कॉलों की कतार</h3>
+      <p class="screen-note">AI वादे की तारीख़ के <b>बाद</b> ही follow-up करता है — जिस दिन वादा था, उस दिन नहीं।</p>
+      <table><thead><tr><th>ग्राहक</th><th>वादा</th><th>follow-up</th><th>हालत</th></tr></thead><tbody id="queueBody"></tbody></table>
     </div>
   </div>
 </section>
 </main>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -235,20 +422,29 @@ const SAMPLES=[
  'Meena didi ne 500 ka saman liya, 200 udhaar pe',
  'Ramesh ko kal 350 ka udhaar diya, biscuit aur chai',
  'Sunita ji se aaj 400 ka atta, tel aur masala udhaar me gaya'];
-const DATEWORDS={aaj:0,kal:1,parso:2,'pichhle':-1};
-const ITEMWORDS=['biscuit','chai','sabzi','doodh','atta','tel','oil','masala','namkin','chawal','rice','ration','saman','coldrink','namkeen'];
+const DATEWORDS={aaj:0,'आज':0,kal:1,'कल':1,parso:2,'परसो':2,'परसों':2,'pichhle':-1,'पिछले':-1};
+const ITEMWORDS=['biscuit','chai','sabzi','doodh','atta','tel','oil','masala','namkin','chawal','rice','ration','saman','coldrink','namkeen','बिस्किट','चाय','सब्ज़ी','सब्जी','दूध','आटा','तेल','मसाला','नमकीन','चावल','सामान'];
 
 function parseVoiceNote(text){
-  const low=' '+text.toLowerCase()+' ';
-  const amt=low.match(/(?:₹\s*)?(\d{2,7})/);                 // amount
-  const name=low.match(/([a-z]+)\s+(?:ne|ko|se|ki|ka)\s/);   // "X ne/ko/se …"
-  let itemHits=ITEMWORDS.filter(w=>low.includes(w));         // items
+  let low=' '+text.toLowerCase()+' ';
+  low=low.replace(/[०-९]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x0966+48)); // Devanagari digits → ASCII
+  const nums=[...low.matchAll(/(?:₹\s*)?(\d{2,7})/g)].map(m=>({n:+m[1],i:m.index}));
+  const uIdx=/udhaar/.test(low)?low.indexOf('udhaar'):(/उधार/.test(low)?low.indexOf('उधार'):-1);
+  let amtVal=null;                                              // amount
+  if(nums.length===1) amtVal=nums[0].n;
+  else if(nums.length>1){
+    if(uIdx>=0){ nums.sort((a,b)=>Math.abs(a.i-uIdx)-Math.abs(b.i-uIdx)); amtVal=nums[0].n; } // "500 ka saman, 200 udhaar pe" → 200 (closest to 'udhaar')
+    else amtVal=nums[0].n;
+  }
+  const nameM=low.match(/([a-z\u0900-\u097F]+(?:\s+[a-z\u0900-\u097F]+){0,2})\s+(?:ne|ko|se|ki|ka|ने|को|से|की|का)\s/); // "X Y ne/ko/ने/को …"
+  let itemHits=ITEMWORDS.filter(w=>low.includes(w));             // items
   let dateOff=null,dateWord=null;
   for(const w in DATEWORDS){ if(low.includes(w)){dateOff=DATEWORDS[w];dateWord=w;} }
+  const nm=nameM?nameM[1]:null;                                  // may include honorific ("meena didi", "sunita ji")
   return {
-    name: name ? name[1].replace(/^\w/,c=>c.toUpperCase())+(text.match(/didi/i)?' Didi':text.match(/ji\b/i)?' ji':'') : 'Naya customer',
-    amount: amt? +amt[1] : null,
-    items: itemHits.filter(w=>w!=='saman').join(', '),
+    name: nm ? nm.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ') : 'Naya customer',
+    amount: amtVal,
+    items: itemHits.filter(w=>!['saman','सामान'].includes(w)).join(', '),
     date: d(dateOff||0), dateWord: dateWord||'aaj',
   };
 }
@@ -263,27 +459,27 @@ mic.onclick=async()=>{
   if(mic.classList.contains('rec')){ if(rec)rec.stop(); return; } // tap again = stop early
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mic.classList.add('rec');$('miclabel').textContent='Boliye… (dobara tap = ruk)';
+    mic.classList.add('rec');$('miclabel').textContent='बोलिए… (रोकने के लिए फिर दबाएँ)';
     $('wave').classList.add('on');
     chunks=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>chunks.push(e.data);
     rec.start();
     rec.onstop=async()=>{
       stream.getTracks().forEach(t=>t.stop());
-      mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='Saaras se sun rahi hoon…';
+      mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='Saaras सुन रही है…';
       try{
         const wav=await toWav(new Blob(chunks,{type:'audio/webm'}));
         const j=await api('/api/stt',{wav:b64(wav)});          // ← Saaras (code-mix mode)
-        $('miclabel').textContent='Tap & speak';
+        $('miclabel').textContent='माइक दबाकर बोलिए';
         runNote(j.transcript||'…');
       }catch(err){
-        $('miclabel').textContent='Tap & speak';
-        toast('⚠️ Saaras STT se baat na ho payi ('+(err.message||err)+') — demo chip try kariye');
+        $('miclabel').textContent='माइक दबाकर बोलिए';
+        toast('⚠️ Saaras STT तक audio नहीं पहुँचा ('+(err.message||err)+') — नीचे नमूना चुनिए');
       }
     };
     setTimeout(()=>{ if(rec&&rec.state==='recording')rec.stop(); },10000); // 10s cap
   }catch(mErr){
-    toast('🎤 Mic nahi mila — neeche sample voice-note chip use kariye');
-    mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='Tap & speak';
+    toast('🎤 माइक नहीं मिला — नीचे नमूना voice-note चुनिए');
+    mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='माइक दबाकर बोलिए';
   }
 };
 
@@ -294,8 +490,8 @@ function runNote(text){ /* transcript (from Saaras or a sample chip) → structu
 }
 $('understand').onclick=async()=>{
   const note=$('asrText').textContent.trim();
-  if(!note){toast('Pehle note boliye ya chip chuniye');return;}
-  const btn=$('understand');btn.disabled=true;const old=btn.textContent;btn.textContent='🧠 105B soch rahi hoon…';
+  if(!note){toast('पहले कुछ बोलिए या नमूना चुनिए');return;}
+  const btn=$('understand');btn.disabled=true;const old=btn.textContent;btn.textContent='105B सोच रही है…';
   let p;
   try{ /* primary: sarvam-105b-conversations */
     const j=await api('/api/structure',{note});
@@ -304,20 +500,20 @@ $('understand').onclick=async()=>{
        amount:j.amount?Number(j.amount):null, items:j.items?String(j.items):'...',
        date:d(off), dateWord:(j.date_hint&&j.date_hint!=='none')?j.date_hint:'aaj'};
   }catch(err){ /* fallback: on-device regex parser — demo never dies */
-    toast('⚠️ 105B tak request nahi pahunchi — on-device fallback parser use kiya');
+    toast('⚠️ 105B तक request नहीं पहुँची — खुद के parser से समझा');
     p=parseVoiceNote(note);
   }
   btn.disabled=false;btn.textContent=old;
-  if(!p.amount){toast('⚠️ Amount samajh nahi aaya — "kitne ka?" poochti hoon');return;}
+  if(!p.amount){toast('⚠️ रकम समझ नहीं आई — "कितने का?" पूछ लीजिए');return;}
   $('confirmCard').style.display='block';
   $('readback').textContent=`Samajh gaya. ${p.name}, ${fmt(p.amount)}, ${p.dateWord}, ${p.items||'saman'}. Confirm karein?`;
   speak($('readback').textContent);  // ← Bulbul reads the confirmation aloud
   $('slotTable').querySelector('tbody').innerHTML=
-    `<tr><td>👤 Customer</td><td class="slot">${p.name}</td><td>💰 Amount</td><td class="slot">${fmt(p.amount)}</td></tr>
-     <tr><td>📅 Date</td><td class="slot">${dstr(p.date)}</td><td>🛒 Items</td><td class="slot">${p.items||'—'}</td></tr>`;
+    `<tr><td>ग्राहक</td><td class="slot">${p.name}</td><td class="num">रकम</td><td class="slot">${fmt(p.amount)}</td></tr>
+     <tr><td>तारीख़</td><td class="slot">${dstr(p.date)}</td><td>सामान</td><td class="slot">${p.items||'—'}</td></tr>`;
   $('confirmAdd').onclick=()=>{
     ledger.unshift({name:p.name,amount:p.amount,items:p.items,date:d(0),status:'open',promise:null,calls:0});
-    renderLedger();toast('✅ Khata me daal diya — zero typing');
+    renderLedger();toast('✅ खाते में लिख दिया — typing बिल्कुल नहीं');
     setTimeout(()=>show('ledger'),600);
   };
 };
@@ -333,23 +529,23 @@ function statusTag(e){
 function renderLedger(){
   $('ledgerBody').innerHTML=ledger.map((e,i)=>`<tr>
     <td><b>${e.name}</b><br><span class="small">${e.items||''}</span></td>
-    <td><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
+    <td class="num"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
     <td class="small">${dstr(e.date)}</td><td>${statusTag(e)}</td><td class="small">${e.calls}/2 this week</td>
-    <td>${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">📞 Reminder</button>`:'—'}</td></tr>`).join('');
+    <td>${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">📞 बॉलो</button>`:'—'}</td></tr>`).join('');
 }
 renderLedger();
 
 /* ================= REMINDER CALL (scripted with live branching) ================= */
 let CUR=null;
 window.prepCall=i=>{ show('call'); CUR={i,e:ledger[i]}; $('callSetup').style.display='block'; $('callStage').style.display='none';
-  toast('Target: '+ledger[i].name); };
+  toast('कॉल करने वाले: '+ledger[i].name); };
 $('startCall').onclick=startCall;
 
 const weekCalls=e=>e.calls; // in-demo; production: query call log by ISO week
 
 async function startCall(){
   const e=CUR.e;
-  if(weekCalls(e)>=2){ toast('🛡 Politeness Engine: is hafte 2 calls ho chuki — WhatsApp voice note bhej diya.'); return; }
+  if(weekCalls(e)>=2){ toast('🛡 Politeness Engine: हफ्ते की 2 कॉल हो चुकीं — WhatsApp voice note भेज दिया।'); return; }
   $('callSetup').style.display='none';$('callStage').style.display='block';
   $('bubbles').innerHTML='';$('extractCard').style.display='none';$('callWho').textContent=e.name;
   await ai(`Namaste ${e.name}, main Sharma uncle ki dukaan se bol rahi hoon. ${fmt(e.amount)} ka udhaar ${dstr(e.date)} ka chal raha hai, bas yaad dila rahi hoon. UPI se abhi kar sakti hain, ya kab tak theek rahega? 🙏 (Opt-out: "call band karo" boliye to turant)`);
@@ -370,10 +566,10 @@ async function pick(kind){
   if(kind==='promise'){
     const sunday=nextSunday();
     await cust('Sunday tak de dungi.');
-    await ai(`Bilkul ${e.name}, Sunday (${dstr(sunday)}) tak note kar liya. Dhanyavaad! Aap din se hi humne chhaanta hai 😊🙏`);
+    await ai(`Bilkul ${e.name}, Sunday (${dstr(sunday)}) tak note kar liya. Dhanyavaad! 🙏`);
     kyc(e,{status:'promise',promise:sunday});
-    extracted(`🤝 Promise: "Sunday tak" → auto follow-up only <b>after ${dstr(new Date(sunday.getTime()+DAY))}</b> (never before — promise-respecting scheduler)`);
-    sysMsg('✅ Call logged · promise saved · follow-up auto-scheduled');
+    extracted(`🤝 Promise: "Sunday tak" → follow-up sirf <b>${dstr(new Date(sunday.getTime()+DAY))}</b> ke baad, उस दिन नहीं`);
+    sysMsg('✅ कॉल logged · वादा saved · follow-up शेड्यूल');
   }
   if(kind==='objection'){
     await cust('Abhi paise nahi hain, didi vyast hain…');
@@ -382,22 +578,22 @@ async function pick(kind){
     await ai('Bahut shukriya! ₹100 note kar liya ✅ Baaki agle hafte, bina reminder ke intezar rahe. Namaste 🙏');
     const part=Math.min(100,Math.round(e.amount*0.25));
     kyc(e,{totalPaid:(e.totalPaid||0)+part, status:'paid-part', promise:d(7), paidPart:e.amount-part});
-    extracted(`🟡 Part payment ${fmt(part)} accepted · balance ${fmt(e.amount-part)} · promise "agle hafte" → ${dstr(d(7))}`);
-    window.UPISent=true; sysMsg('📲 UPI collect request bheji gayi · payment webhook received');
+    extracted(`🟡 आधा भुगतान ${fmt(part)} मंज़ूर · बाकी ${fmt(e.amount-part)} · वादा "agle hafte" → ${dstr(d(7))}`);
+    window.UPISent=true; sysMsg('📲 UPI collect request भेजी · payment webhook मिला');
   }
   if(kind==='upi'){
     await cust('UPI se abhi kar deti hoon.');
     await ai('Dhanyavaad ji! Screen par UPI link bhej rahi hoon — bas ek tap. Namaste 🙏');
     kyc(e,{status:'paid'});
-    extracted(`✅ Full payment ${fmt(e.amount)} via UPI deep link (upi://pay) — khata clear!`);
-    sysMsg('📲 Payment verified · ledger updated · thank-you WhatsApp voice note sent');
+    extracted(`✅ पूरा भुगतान ${fmt(e.amount)} UPI से (upi://pay) — खाता साफ़!`);
+    sysMsg('📲 भुगतान verified · खाता updated · धन्यवाद voice note भेजा');
   }
   if(kind==='handoff'){
     await cust('Aap khud baat kariye, AI nahi.');
-    await ai('Bilkul, samajh gayi. Main Sharma uncle ko bata denge ki aapne baat karni hai — wo sabah khud call karenge. 🙏');
+    await ai('Bilkul, samajh gayi. Main Sharma uncle ko bata denge ki aapne baat karni hai — wo kal khud call karenge. 🙏');
     kyc(e,{handoff:true});
-    extracted('🔁 Escalated to human shopkeeper — AI steps back, relationship protected');
-    sysMsg('Roz digest me shopkeeper ko bata diya jaayega');
+    extracted('🔁 बात shopkeeper तक पहुँचाई — AI भाग-दौड़ा का बाहर, रिश्ता सुरक्षित');
+    sysMsg('रोज़ के digest में shopkeeper को बताया जाएगा');
   }
   renderLedger();
 }
@@ -412,23 +608,22 @@ function renderDigest(){
   const promisesToday=out.filter(e=>e.promise&&e.calls>0).length;
   const overdue=out.filter(e=>!e.promise&&(now-e.date)/DAY>7);
   $('stats').innerHTML=`
-    <div class="stat"><div class="n">${fmt(totalDue)}</div><div class="l">Total udhaar outstanding<br>(${out.length} customers)</div></div>
-    <div class="stat"><div class="n" style="color:var(--green)">${promisesToday}</div><div class="l">Promises captured<br>from today's calls</div></div>
-    <div class="stat"><div class="n" style="color:var(--red)">${overdue.length}</div><div class="l">Overdue 7+ days,<br>no promise yet</div></div>
-    <div class="stat"><div class="n" style="color:#a35c00">🪔</div><div class="l">Diwali in 12 days —<br>festival campaign ready</div></div>`;
+    <div class="fr total"><span>कुल उधार बाकी</span><b>${fmt(totalDue)}</b><i>${out.length} ग्राहक पर</i></div>
+    <div class="fr"><span>आज की कॉलों से वादे</span><b class="ok">${promisesToday}</b><i>AI ने खुद capture किए</i></div>
+    <div class="fr"><span>7+ दिन पुराने बाकी</span><b class="warn">${overdue.length}</b><i>वादा अभी नहीं</i></div>`;
   $('queueBody').innerHTML=out.filter(e=>e.promise||e.handoff).map(e=>`<tr>
-    <td><b>${e.name}</b></td><td class="small">${e.handoff?'Shopkeeper will call personally':'Balance '+fmt(e.amount-(e.totalPaid||0))+' by '+dstr(e.promise)}</td>
+    <td><b>${e.name}</b></td><td class="small">${e.handoff?'Shopkeeper खुद बात करेंगे':'रकम '+fmt(e.amount-(e.totalPaid||0))+', तारीख़ '+dstr(e.promise)}</td>
     <td class="small">${e.promise?dstr(new Date(e.promise.getTime()+DAY)):'—'}</td>
-    <td>${statusTag(e)}</td></tr>`).join('')||'<tr><td colspan="4" class="small">Abhi koi promise nahi — ek AI reminder call kariye 📞</td></tr>';
+    <td>${statusTag(e)}</td></tr>`).join('')||'<tr><td colspan="4" class="small">अभी कोई वादा नहीं — एक AI रिमाइंडर कॉल कीजिए</td></tr>';
 
   // festival mode
   $('festWrap').innerHTML=`<div class="fest">
-    <div><b>🪔 Festival Mode — Diwali campaign</b><br>
-    <span style="font-size:12.5px;opacity:.9">Tone: "shubh kaam" · script: "Diwali shubh ho! Chhota sa hisaab saaf karke utsav manaiye" · max 1 call per customer · part-payment offers auto-included</span></div>
+    <div><b>दीवाली कैंपेन</b><br>
+    <span class="fsub">लहजा: "shubh kaam" — "दीवाली आपके घर ख़ुशियाँ लाए! छोटा-सा हिसाब साफ़ करके utsav मनाइए।" हर ग्राहक पर अधिक से अधिक 1 कॉल; हिस्से का भुगतान ऑफ़र अपने-आप जुड़ता है।</span></div>
     <label class="switch"><input type="checkbox" id="festTgl"><span class="sl"></span></label>
-    <button class="upi" id="festGo" style="display:none">Preview bulk send → 12 gentle reminders queued</button></div>`;
+    <button class="upi" id="festGo" style="display:none">12 सौम्य रिमाइंडर क़तार में लगाओ</button></div>`;
   $('festTgl').onchange=ev=>$('festGo').style.display=ev.target.checked?'inline-block':'none';
-  $('festGo').onclick=()=>toast('🪔 12 gentle Diwali reminders queued for 10 AM tomorrow · 0 threats detected by tone-checker');
+  $('festGo').onclick=()=>toast('🪔 12 gentle Diwali reminders kal subah 10 baje ki queue me · tone-checker: 0 dhamkiyan');
 }
 
 $('playDigest').onclick=async()=>{
@@ -437,7 +632,7 @@ $('playDigest').onclick=async()=>{
   const total=out.reduce((s,e)=>s+e.amount-(e.totalPaid||0),0);
   const prom=out.filter(e=>e.promise).map(e=>`${e.name} ne ${dstr(e.promise)} bol diya`);
   const over=out.filter(e=>!e.promise&&(now-e.date)/DAY>7).map(e=>`${e.name} se ${Math.round((now-e.date)/DAY)} din`);
-  const line=`Namaste Sharma uncle! Shaam ka hisaab: kul ${fmt(total)} udhaar baaki hai, is hafte ${out.filter(e=>e.calls).length} customers se baat hui. ${prom.join('; ')||'Aaj koi naya promise nahi'}. ${over.length?'Dhyaan dijiye: '+over.join(', ')+' se purana hai — kal ek gentle call bhej doon?':''}. Shubh raatri! 🌙`;
+  const line=`Namaste Sharma uncle! Shaam ka hisaab: kul ${fmt(total)} udhaar baaki hai, is hafte ${out.filter(e=>e.calls).length} customers se baat hui. ${prom.join('; ')||'Aaj koi naya promise nahi'}. ${over.length?'Dhaan dijiye: '+over.join(', ')+' se purana hai — kal ek gentle call bhej doon?':''}. Shubh raatri! 🌙`;
   const el=$('digestSpoken');el.textContent='🔊 ';speak(line);await typeInto(el,line,14);
 };
 renderDigest();

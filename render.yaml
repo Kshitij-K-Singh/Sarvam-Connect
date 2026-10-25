@@ -1,0 +1,18 @@
+# Udhaar Dost on Render — Web Service
+# SARVAM_API_KEY is set in the Render dashboard (sync: false = never in code)
+services:
+  - type: web
+    name: udhaar-dost
+    runtime: python
+    plan: free
+    rootDir: udhaar-dost-demo
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -X utf8 server.py    # utf8 matters: Devanagari reaches stdio
+    healthCheckPath: /healthz
+    envVars:
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: PYTHONUTF8
+        value: "1"
+      - key: PYTHONUNBUFFERED
+        value: "1"
