@@ -158,5 +158,38 @@ t('F6 status is never colour-only: every tag has glyph+text', () =>
   assert.ok(html.includes('✅ Paid') && html.includes('🤝 Promise') &&
             html.includes('⚠️ Overdue') && html.includes('Open')));
 
+/* ============ G. Language toggle — हिंदी ⇄ English ============ */
+console.log('G. Language toggle');
+t('G1 language bar present with persist key ud-lang', () => {
+  assert.ok(html.includes('id="langGroup"'), 'langGroup id');
+  assert.ok(html.includes('data-lang="hi"') && html.includes('data-lang="en"'), 'both radios');
+  assert.ok(html.includes("localStorage.setItem('ud-lang',LANG)"), 'persists choice');
+  assert.ok(html.includes("localStorage.getItem('ud-lang')"), 'reads choice back'); });
+t('G2 every translatable node carries data-i18n and the EN dictionary covers it', () => {
+  const keys = [...html.matchAll(/data-i18n="([a-zA-Z0-9]+)"/g)].map(m => m[1]);
+  assert.ok(keys.length >= 30, 'at least 30 nodes, got ' + keys.length);
+  const dict = html.match(/const EN_DICT=\{([^}]*)\}/);
+  assert.ok(dict, 'EN_DICT declared');
+  for (const k of keys) assert.ok(dict[1].includes(k + ':'), 'dict key missing: ' + k); });
+t('G3 Hindi original captured once (HI) before any swap; applyLang re-renders live views', () => {
+  assert.ok(html.includes('const HI={}'), 'HI capture');
+  assert.ok(/function applyLang\(\)\{[\s\S]*?renderLedger\(\);[\s\S]*?renderDigest\(\)/.test(html),
+    'applyLang re-renders ledger + digest'); });
+t('G4 English-only Latin webfont; no Devanagari webfont downloaded', () => {
+  assert.ok(/family=Archivo/.test(html), 'Archivo loaded from Google Fonts');
+  assert.ok(!/@import|font-face/.test(html) || !/fonts\.googleapis\.com[^"']*(Tiro|Mukta|Hind|Noto)[^"']*/.test(html),
+    'no Devanagari webfont request'); });
+t('G5 T() bilingual helper drives dynamic strings and respects extracted functions', () => {
+  const tcalls = (html.match(/T\(/g) || []).length;
+  assert.ok(tcalls >= 25, 'T() used widely, got ' + tcalls);
+  const st = extractFn('statusTag');
+  assert.ok(!st.includes('T('), 'statusTag stays isolated (no outer helpers)');
+  const ns = extractFn('nextSunday');
+  assert.ok(!ns.includes('T('), 'nextSunday stays isolated'); });
+t('G6 <html lang> follows the toggle (pre-paint + on switch)', () => {
+  assert.ok(html.includes("de.lang=(l==='en'?'en':'hi')"), 'pre-paint <html lang>');
+  assert.ok(html.includes("document.documentElement.lang = LANG==='en' ? 'en' : 'hi'"),
+    'applyLang updates <html lang>'); });
+
 console.log(`\n${results.pass} passed, ${results.fail} failed`);
 process.exit(results.fail ? 1 : 0);

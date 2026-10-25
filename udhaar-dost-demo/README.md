@@ -50,17 +50,28 @@ set `PYTHONUTF8=1`. `/api/stt` needs mic access — browsers require HTTPS for t
 
 ## Design system
 
-The UI is drawn from the bahi-khata itself: the header is the red-cloth book cover
-(#7a1f1f) with gold-stamped title, content lives on the ledger paper sheet
-(#f6efdf) with the red margin rule (#c24a3b) running down the left, numbers
-right-align toward the rule like handwritten entries, and digest totals carry the
-bahi double-rule convention. Type: Tiro Devanagari Hindi (display) + Noto Sans Devanagari
-(UI). One bold element only — the turmeric mic.
+The page is drawn from the bahi-khata's night paper: dark ledger ground (`--page:#171411` sections,
+`#221e19` cover cloth) with gold-stamped type, and one running motif lifted from the book itself —
+the **red margin rule**, which draws itself full-width under the header, runs down each section as
+a gutter rule, misprints as chip bullets and marks the active tab. Type: **Archivo** (single Latin
+webfont, fluid `clamp()` sizes); Hindi renders through system Devanagari fallbacks — no Devanagari
+webfont is downloaded. One bold element only — the turmeric mic.
+
+Accessibility & **language toggle**: five colour schemes (मूल / उजाला / राहत / रात / काला-पीला,
+persisted in `ud-theme`), font steps (85%–145%, `ud-fs`), and a हिंदी ⇄ English toggle (`ud-lang`)
+applied pre-paint (no language flash on refresh). Static copy swaps via `data-i18n` + `EN_DICT`;
+dynamic strings go through a bilingual `T()` helper; `<html lang>` follows the choice.
+
+Imagery: four Creative-Commons photographs of the bazaar world the ledger lives in — Main Bazaar
+Paharganj (Argenberg, CC BY 4.0), Khari Baoli (Haugen, CC BY 2.0), Kolkata New Market spices
+(Savage, CC BY 2.0), and the account-book of Thomas Mister (Wellcome Collection, CC BY 4.0) —
+each credited inline in a bilingual caption; full details in `assets/credits.json`.
 
 ## Run tests
 
 ```
-node tests/js/frontend.mjs                       # 21 checks — runs the demo's real JS in Node
+node tests/js/frontend.mjs                       # 33 checks — runs the demo's real JS in Node
+                                                 #   (incl. section G: language-toggle gates)
 python -m unittest discover tests -v             # 27 checks — politeness/policy specs + live Sarvam API
 python server.py                                 # needed for the live-API tests (SARVAM_API_KEY in ../.env)
 ```

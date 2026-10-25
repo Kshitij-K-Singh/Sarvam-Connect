@@ -1,0 +1,1239 @@
+{
+ "url": "udhaar-dost-demo\\index.html",
+ "at": "2026-10-25T13:51:44.587Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 3,
+   "filled": [
+    0.93,
+    0.67,
+    0.58
+   ],
+   "motion": {
+    "elements": 25,
+    "css": 25,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 1966,
+     "screens": 2.2,
+     "words": 259,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 1,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "main-bazaar-paharganj-delhi-india.jpg",
+      "dry-fruits-being-sold-at-khari-baoli.jpg",
+      "india-kolkata-2-24-new-market-spice.jpg",
+      "account-book-of-thomas-mister.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "chars": 47,
+     "lines": 1,
+     "size": 84,
+     "vw": 5.8,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.66,
+     "top": 45,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "lines": 1,
+     "size": 84,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "words": 9,
+      "chars": 47,
+      "lines": 1,
+      "size": 84,
+      "vw": 5.8,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.66,
+      "top": 45,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "बोलो, खता हो गया।",
+      "words": 4,
+      "chars": 17,
+      "lines": 2,
+      "size": 56,
+      "vw": 3.9,
+      "font": "Archivo",
+      "weight": 700,
+      "tracking": 0,
+      "leading": 1.04,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.24,
+      "top": 798,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 2,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 4,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      26,
+      56,
+      84
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.2
+     },
+     "measureChars": 60,
+     "max": {
+      "size": 84,
+      "vw": 5.8,
+      "font": "Archivo",
+      "text": "उधार दोस्त"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.12,
+     "centerShare": 0.07,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#171411",
+     "bodyBgHsl": {
+      "h": 30,
+      "s": 0.15,
+      "l": 0.08
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#2a1012",
+       "top": 0,
+       "hsl": {
+        "h": 355,
+        "s": 0.45,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#221e19",
+       "top": 762,
+       "hsl": {
+        "h": 33,
+        "s": 0.15,
+        "l": 0.12
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a4917b",
+       "share": 0.37
+      },
+      {
+       "color": "#ecdfc6",
+       "share": 0.19
+      },
+      {
+       "color": "#c99b45",
+       "share": 0.18
+      },
+      {
+       "color": "#f3e4c8",
+       "share": 0.15
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
+      }
+     ],
+     "button": null,
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 0,
+     "inHero": 0,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": []
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 50,
+     "squareMedia": 4,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.34
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 390,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 1966,
+    "margins": {
+     "left": 246,
+     "right": 246
+    },
+    "sections": [
+     {
+      "sel": "header",
+      "tag": "header",
+      "top": 0,
+      "height": 390,
+      "words": 84,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "उधार दोस्त",
+       "size": 84,
+       "tag": "h1"
+      },
+      "left": 246,
+      "right": 266,
+      "textLeft": 246,
+      "textRight": 266,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "figure.streetfig",
+      "tag": "figure",
+      "top": 395,
+      "height": 306,
+      "words": 18,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 42,
+      "right": 910,
+      "textLeft": 42,
+      "textRight": 910,
+      "fullBleed": true,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.book",
+      "tag": "div",
+      "top": 701,
+      "height": 1134,
+      "words": 139,
+      "media": 3,
+      "middle": 0,
+      "heading": {
+       "text": "बोलो, खता हो गया।",
+       "size": 56,
+       "tag": "h2"
+      },
+      "left": 246,
+      "right": 246,
+      "textLeft": 248,
+      "textRight": 274,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "size": 84,
+      "top": 45,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 246,
+      "n": 3
+     },
+     {
+      "x": 306,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 5,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.07,
+    "voidBox": {
+     "x": 720,
+     "y": 120,
+     "w": 720,
+     "h": 120
+    }
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.98,
+    0.84
+   ],
+   "motion": {
+    "elements": 25,
+    "css": 25,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1905,
+     "screens": 1.9,
+     "words": 259,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 1,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "main-bazaar-paharganj-delhi-india.jpg",
+      "dry-fruits-being-sold-at-khari-baoli.jpg",
+      "india-kolkata-2-24-new-market-spice.jpg",
+      "account-book-of-thomas-mister.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "chars": 47,
+     "lines": 1,
+     "size": 49.2,
+     "vw": 6.4,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.92,
+     "top": 51,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "lines": 1,
+     "size": 49.2,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "words": 9,
+      "chars": 47,
+      "lines": 1,
+      "size": 49.2,
+      "vw": 6.4,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 51,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "बोलो, खता हो गया।",
+      "words": 4,
+      "chars": 17,
+      "lines": 1,
+      "size": 34.6,
+      "vw": 4.5,
+      "font": "Archivo",
+      "weight": 700,
+      "tracking": 0,
+      "leading": 1.04,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.41,
+      "top": 856,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 2,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 4,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      20,
+      35,
+      49
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.2
+     },
+     "measureChars": 60,
+     "max": {
+      "size": 49.2,
+      "vw": 6.4,
+      "font": "Archivo",
+      "text": "उधार दोस्त"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.12,
+     "centerShare": 0.07,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#171411",
+     "bodyBgHsl": {
+      "h": 30,
+      "s": 0.15,
+      "l": 0.08
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#2a1012",
+       "top": 0,
+       "hsl": {
+        "h": 355,
+        "s": 0.45,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#221e19",
+       "top": 815,
+       "hsl": {
+        "h": 33,
+        "s": 0.15,
+        "l": 0.12
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a4917b",
+       "share": 0.37
+      },
+      {
+       "color": "#ecdfc6",
+       "share": 0.19
+      },
+      {
+       "color": "#c99b45",
+       "share": 0.18
+      },
+      {
+       "color": "#f3e4c8",
+       "share": 0.15
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
+      }
+     ],
+     "button": null,
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 0,
+     "inHero": 0,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": []
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 4,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.34
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 398,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1905,
+    "margins": {
+     "left": 31,
+     "right": 31
+    },
+    "sections": [
+     {
+      "sel": "header",
+      "tag": "header",
+      "top": 0,
+      "height": 398,
+      "words": 84,
+      "media": 0,
+      "middle": 16,
+      "heading": {
+       "text": "उधार दोस्त",
+       "size": 49,
+       "tag": "h1"
+      },
+      "left": 31,
+      "right": 104,
+      "textLeft": 31,
+      "textRight": 105,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "figure.streetfig",
+      "tag": "figure",
+      "top": 403,
+      "height": 348,
+      "words": 18,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 30,
+      "right": 250,
+      "textLeft": 30,
+      "textRight": 250,
+      "fullBleed": true,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.book",
+      "tag": "div",
+      "top": 751,
+      "height": 1015,
+      "words": 139,
+      "media": 3,
+      "middle": 0,
+      "heading": {
+       "text": "बोलो, खता हो गया।",
+       "size": 35,
+       "tag": "h2"
+      },
+      "left": 31,
+      "right": 31,
+      "textLeft": 33,
+      "textRight": 53,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "size": 49,
+      "top": 51,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 31,
+      "n": 2
+     },
+     {
+      "x": 69,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 3,
+   "filled": [
+    0.99,
+    0.92,
+    0.77
+   ],
+   "motion": {
+    "elements": 25,
+    "css": 25,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 2290,
+     "screens": 2.7,
+     "words": 248,
+     "img": 4,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 1,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "main-bazaar-paharganj-delhi-india.jpg",
+      "dry-fruits-being-sold-at-khari-baoli.jpg",
+      "india-kolkata-2-24-new-market-spice.jpg",
+      "account-book-of-thomas-mister.jpg"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "chars": 47,
+     "lines": 2,
+     "size": 40,
+     "vw": 10.3,
+     "font": "Archivo",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.91,
+     "top": 42,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+     "words": 9,
+     "lines": 2,
+     "size": 40,
+     "font": "Archivo"
+    },
+    "headings": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "words": 9,
+      "chars": 47,
+      "lines": 2,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Archivo",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.91,
+      "top": 42,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "बोलो, खता हो गया।",
+      "words": 4,
+      "chars": 17,
+      "lines": 1,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Archivo",
+      "weight": 700,
+      "tracking": 0,
+      "leading": 1.04,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.78,
+      "top": 860,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 2,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 4,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Archivo",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      13,
+      14,
+      15,
+      16,
+      20,
+      32,
+      40
+     ],
+     "sizeCount": 7,
+     "notLoaded": [],
+     "body": {
+      "font": "Archivo",
+      "size": 16,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 14.2
+     },
+     "measureChars": 44,
+     "max": {
+      "size": 40,
+      "vw": 10.3,
+      "font": "Archivo",
+      "text": "उधार दोस्त"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0.12,
+     "centerShare": 0.07,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#171411",
+     "bodyBgHsl": {
+      "h": 30,
+      "s": 0.15,
+      "l": 0.08
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#2a1012",
+       "top": 0,
+       "hsl": {
+        "h": 355,
+        "s": 0.45,
+        "l": 0.11
+       }
+      },
+      {
+       "color": "#221e19",
+       "top": 827,
+       "hsl": {
+        "h": 33,
+        "s": 0.15,
+        "l": 0.12
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#a4917b",
+       "share": 0.34
+      },
+      {
+       "color": "#ecdfc6",
+       "share": 0.19
+      },
+      {
+       "color": "#c99b45",
+       "share": 0.18
+      },
+      {
+       "color": "#f3e4c8",
+       "share": 0.16
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
+      }
+     ],
+     "button": null,
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 0,
+     "inHero": 0,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": []
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 2,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.34
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 476,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "archivo"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 2290,
+    "margins": {
+     "left": 18,
+     "right": 18
+    },
+    "sections": [
+     {
+      "sel": "header",
+      "tag": "header",
+      "top": 0,
+      "height": 476,
+      "words": 84,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "उधार दोस्त",
+       "size": 40,
+       "tag": "h1"
+      },
+      "left": 18,
+      "right": 23,
+      "textLeft": 18,
+      "textRight": 23,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "figure.streetfig",
+      "tag": "figure",
+      "top": 481,
+      "height": 287,
+      "words": 18,
+      "media": 1,
+      "middle": 0,
+      "heading": null,
+      "left": 30,
+      "right": 14,
+      "textLeft": 30,
+      "textRight": 14,
+      "fullBleed": true,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div.book",
+      "tag": "div",
+      "top": 767,
+      "height": 1361,
+      "words": 128,
+      "media": 3,
+      "middle": 0,
+      "heading": {
+       "text": "बोलो, खता हो गया।",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 18,
+      "right": 18,
+      "textLeft": 20,
+      "textRight": 19,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "उधार दोस्त · Udhaar Dost · आवाज़ वाला उधार-खाता",
+      "size": 40,
+      "top": 42,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [
+     {
+      "text": "बाज़ार जिसका हिसाब यहाँ चलता है — मुख्य बाज़ार, पह",
+      "side": "right",
+      "px": 14
+     }
+    ],
+    "edges": [
+     {
+      "x": 18,
+      "n": 2
+     },
+     {
+      "x": 40,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "first-action",
+   "width": 1440,
+   "message": "No visible button in the first screen.",
+   "fix": "Give the one primary action a real button in the first screen (a filled or solid-bordered control, 44px or taller), not only a link in the navigation.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "WARN",
+   "id": "edge-text",
+   "width": 390,
+   "message": "1 text block(s) sit 12–15px from the phone's edge: \"बाज़ार जिसका हिसाब यहाँ चलता ह\" (14px)",
+   "fix": "The page margin is 16–20px on a phone; the header and the corner labels sit on it too."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "D:\\sarvam\\.taste-skill\\inspect\\desktop-fold.jpg",
+   "pages": [
+    "D:\\sarvam\\.taste-skill\\inspect\\desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "D:\\sarvam\\.taste-skill\\inspect\\tablet-fold.jpg",
+   "pages": [
+    "D:\\sarvam\\.taste-skill\\inspect\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "D:\\sarvam\\.taste-skill\\inspect\\mobile-fold.jpg",
+   "pages": [
+    "D:\\sarvam\\.taste-skill\\inspect\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

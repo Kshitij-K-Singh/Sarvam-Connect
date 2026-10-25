@@ -4,27 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="उधार दोस्त — किराने की दुकान का आवाज़ वाला उधार-खाता। बोलकर एंट्री, पॉलिट AI रिमाइंडर कॉल, वादे का हिसाब।">
+<meta name="theme-color" content="#7a1f1f">
 <title>उधार दोस्त — Voice-First Credit Manager</title>
 <script>
-/* सुगम्यता preferences फिल्म शुरू होने से पहले लागू — theme का फ्लैश नहीं दिखता */
+/* सुगम्यता + भाषा preferences फ़िल्म शुरू होने से पहले लागू — theme/language फ्लैश नहीं दिखता */
 (function(){try{
   var de=document.documentElement;
   var t=localStorage.getItem('ud-theme');
   if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
   de.dataset.theme=t;
-  var fs=+(localStorage.getItem('ud-fs')||0);
+  var l=localStorage.getItem('ud-lang');
+  if(l)de.lang=(l==='en'?'en':'hi');
+  var fs=+(localStorage.getItem('ud-fs') ?? -1);
   document.addEventListener('DOMContentLoaded',function(){document.body.style.zoom=([0.85,1,1.15,1.3,1.45][fs+2]||1);});
 }catch(e){}})();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!--
-  Design system: the bahi-khata (red-cloth credit notebook).
-  cloth/gold = the book cover, page = ledger sheet, --rule = the red margin rule,
-  steel = chalk-green. Numbers right-align toward the margin rule; totals carry
-  the bahi double-rule. One bold element: the turmeric mic.
+  Udhaar Dost — direction "one motif": the bahi ledger's red margin rule is the
+  stripe that runs the whole system (full-width band under the cover, the vertical
+  gutter rule per section, the bullet before sample voice-notes, the active tab's
+  underline). One Latin family (Archivo; Devanagari via system fallback). Fluid
+  sizes with clamp(). Bahi-khata palette kept; 5 contrast schemes kept.
 -->
 <style>
   :root{
@@ -35,8 +39,10 @@
     --card:#fffcf3; --hi:#ffffff; --display:var(--cloth); --num:var(--cloth);
     --topen:#9a6200; --tpaid:#57534a; --tagbg:#fff; --toastbg:#26221b; --toastfg:#f6efdf;
     --nbf:#6f6354; --nbb:rgba(0,0,0,.05);
+    --font:'Archivo','Nirmala UI','Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;
+    --gut:clamp(18px,4vw,56px);
+    --ease:cubic-bezier(.22,.9,.3,1);
   }
-  /* रात का खाता — dark theme */
   [data-theme="dark"]{
     --cloth:#2a1012; --cloth-hi:#3a181b;
     --gold:#c99b45; --gold-hi:#e8c36a;
@@ -47,17 +53,14 @@
     --topen:#d9a54c; --tpaid:#a4917b; --tagbg:#28231c; --toastbg:#ecdfc6; --toastfg:#221e19;
     --nbf:#a4917b; --nbb:rgba(255,255,255,.05);
   }
-  /* उजाला — high-contrast light (gov-portal style) */
   [data-theme="contrast"]{
     --page-lo:#f0f0f0; --ink:#111; --ink-lo:#3a3a3a; --hair:#6a6a6a;
     --card:#fff; --hi:#fff; --rule:#5c1010; --topen:#5c4200; --tpaid:#333;
     --display:#4a0f0f; --num:#4a0f0f; --brick:#5c1010;
   }
-  /* राहत रंग — colour-blind safe (navy/amber family, protan-deutan friendly) */
   [data-theme="cb"]{
     --cloth:#0f3f66; --cloth-hi:#1a5487; --rule:#8a5a00; --brick:#b45309; --topen:#8a5a00;
   }
-  /* काला-पीला — maximum visibility (NIC "screen reader" theme) */
   [data-theme="kyan"]{
     --cloth:#000; --cloth-hi:#000; --gold:#ffd400; --gold-hi:#ffd400;
     --page:#0b0b0b; --page-lo:#000; --ink:#ffd400; --ink-lo:#c7ab00;
@@ -70,284 +73,327 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
-    font-family:'Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;
-    background-color:var(--page-lo); color:var(--ink);
-    background-image:radial-gradient(rgba(38,34,27,.055) 1px, transparent 1.5px);
-    background-size:22px 22px;
-    font-size:15px; line-height:1.55; padding-bottom:64px;
+    font-family:var(--font); background-color:var(--page-lo); color:var(--ink);
+    font-size:clamp(15.5px,.4vw + 13.5px,17px); line-height:1.6;
+    padding-bottom:clamp(44px,6vh,72px);
   }
-  [data-theme="dark"] body{background-image:radial-gradient(rgba(236,223,198,.05) 1px, transparent 1.5px)}
-  .display{font-family:'Tiro Devanagari Hindi',serif;font-weight:400}
 
   /* ---------- the book cover ---------- */
   header{
     background:var(--cloth); color:var(--gold-hi);
-    padding:34px 22px 30px; text-align:left;
+    padding:clamp(32px,5vh,54px) 0 clamp(30px,4.5vh,50px);
   }
-  .cover-in{max-width:960px;margin:0 auto;position:relative;padding-right:64px}
-  /* दुकान की साइन-बोर्ड पट्टी — cover का खाली दाहिना कोना */
-  .signboard{
-    position:absolute; right:0; top:0; bottom:0;
-    writing-mode:vertical-rl; display:flex; flex-direction:column; gap:14px;
-    font-family:'Tiro Devanagari Hindi',serif; color:var(--gold);
-    font-size:16px; letter-spacing:1.5px; line-height:1;
-    border-left:1.5px dashed rgba(217,165,76,.45); padding-left:16px;
-  }
-  .signboard small{font-size:11px; color:rgba(217,165,76,.8); letter-spacing:2px}
-  @media(max-width:900px){.signboard{display:none}.cover-in{padding-right:0}}
+  .cover-in{max-width:1060px; margin:0 auto; padding-inline:var(--gut)}
   header h1{
-    font-family:'Tiro Devanagari Hindi',serif; font-weight:400;
-    font-size:clamp(34px,5.5vw,52px); line-height:1.1; letter-spacing:.5px;
-    text-shadow:0 2px 0 rgba(0,0,0,.28);
+    font-weight:600; font-size:clamp(40px,6.4vw,84px); line-height:1;
+    letter-spacing:-.02em;
   }
   header h1 small{
-    font-family:'Noto Sans Devanagari',sans-serif; font-size:13px; font-weight:500;
-    color:var(--gold); letter-spacing:.4px; display:block; margin-top:6px;
-    text-shadow:none;
+    display:block; margin-top:12px; font-size:clamp(13px,1vw,15px);
+    font-weight:500; color:var(--gold); letter-spacing:.02em;
   }
-  header .sub{max-width:56ch; margin-top:14px; font-size:15px; color:#f3e4c8; line-height:1.6}
-  .stamps{display:flex; gap:10px; flex-wrap:wrap; margin-top:20px}
-  .stamp{
-    font-size:12px; line-height:1.35; padding:7px 12px; color:var(--gold);
-    border:1.5px solid rgba(217,165,76,.55); border-radius:3px;
-    background:rgba(0,0,0,.14);
-  }
-  .stamp b{color:var(--gold-hi); font-weight:700}
-  /* सुगम्यता पट्टिका — gov-style controls */
-  .a11ybar{display:flex; gap:8px; align-items:center; margin-top:18px; flex-wrap:wrap}
-  .a11ybar button{
-    font-family:inherit; min-width:40px; cursor:pointer; font-size:13.5px;
-    background:rgba(0,0,0,.14); color:var(--gold-hi);
-    border:1.5px solid rgba(217,165,76,.55); border-radius:3px; padding:6px 11px;
-    font-variant-numeric:tabular-nums;
-  }
-  .a11ybar button:hover{background:rgba(0,0,0,.24)}
-  .a11ybar button:focus-visible{outline:2px solid var(--gold-hi); outline-offset:2px}
-  .a11ybar button.on{background:var(--gold); color:var(--cloth)}
-  .a11ybar .fsval{
-    font-size:12.5px; color:var(--gold); min-width:46px; text-align:center;
-    font-variant-numeric:tabular-nums;
-  }
-  .a11ybar .lbl{font-size:12px; color:var(--gold); margin-right:2px}
-  #themeGroup{display:flex; gap:6px; flex-wrap:wrap}
+  header .sub{max-width:52ch; margin-top:18px; font-size:clamp(16px,1.05vw,18px); color:#f3e4c8; line-height:1.6}
+  .stamp-row{display:flex; gap:12px 28px; flex-wrap:wrap; margin-top:24px; font-size:14px; color:var(--gold); line-height:1.5}
+  .stamp-row b{color:var(--gold-hi); font-weight:600}
 
-  /* ---------- leaf bookmark tabs + the ledger sheet ---------- */
-  .book{max-width:960px;margin:0 auto;padding:0 16px}
+  /* — सुगम्यता पट्टिका: theme · font · language (all three, one quiet row) — */
+  .a11ybar{display:flex; gap:8px 16px; align-items:center; margin-top:26px; flex-wrap:wrap}
+  .a11ybar .lbl{font-size:13px; color:var(--gold)}
+  #themeGroup,#langGroup{display:flex; gap:12px; flex-wrap:wrap}
+  .a11ybar button{
+    font-family:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
+    color:var(--gold); background:transparent; border:none;
+    border-bottom:2px solid transparent; padding:4px 1px; min-width:30px;
+    font-variant-numeric:tabular-nums;
+  }
+  .a11ybar button:hover{color:var(--gold-hi)}
+  .a11ybar button:focus-visible{outline:2px solid var(--gold-hi); outline-offset:2px}
+  .a11ybar button.on{color:var(--gold-hi); border-bottom-color:var(--gold)}
+  .a11ybar button:disabled{opacity:.4; cursor:default}
+  .fsval{font-size:13px; color:var(--gold); min-width:44px; text-align:center; font-variant-numeric:tabular-nums}
+
+  /* ---------- the stripe motif band + the ledger sheet ---------- */
+  .band{height:5px; background:var(--rule)}
+  .book{max-width:1060px; margin:0 auto; padding:0 var(--gut)}
   nav#nav{
-    display:flex; gap:6px; position:sticky; top:0; z-index:5;
-    padding:14px 10px 0; overflow-x:auto; scrollbar-width:none; background:transparent;
+    display:flex; gap:clamp(14px,2.2vw,28px); overflow-x:auto; scrollbar-width:none;
+    position:sticky; top:0; z-index:5; background:var(--page);
+    padding:clamp(16px,2.4vh,26px) 0 0;
   }
   nav#nav::-webkit-scrollbar{display:none}
   nav#nav button{
-    font-family:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
-    color:var(--nbf); background:var(--nbb);
-    border:1px solid var(--hair); border-bottom:none; border-radius:7px 7px 0 0;
-    padding:10px 15px 11px; white-space:nowrap;
+    font-family:inherit; font-size:clamp(14px,1.05vw,15.5px); font-weight:500; cursor:pointer;
+    color:var(--nbf); background:transparent; border:none;
+    border-bottom:2.5px solid transparent; padding:8px 2px 10px; white-space:nowrap;
   }
-  nav#nav button.active{
-    color:var(--ink); background:var(--page);
-    font-weight:700; padding-bottom:12px; margin-bottom:-1px; position:relative;
-  }
-  nav#nav button:focus-visible{outline:2px solid var(--gold-hi); outline-offset:-2px}
-  main{
-    background:var(--page); color:var(--ink);
-    border-radius:0 6px 6px 6px; border:1px solid var(--hair);
-    border-top:none; padding:0 0 28px; min-height:520px;
-  }
-  section{display:none; padding:26px 26px 8px 64px}
+  nav#nav button.active{color:var(--ink); font-weight:600; border-bottom-color:var(--rule)}
+  nav#nav button:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
+  main{background:var(--page); min-height:60vh}
+
+  section{display:none; position:relative; padding:clamp(26px,4vh,46px) 0 clamp(46px,7vh,84px) clamp(34px,5vw,60px)}
   section.active{display:block}
-  /* the red margin rule — lives in the gutter, never under content */
-  section{position:relative}
-  section::before{
-    content:""; position:absolute; left:34px; top:0; bottom:0; width:1.5px;
-    background:var(--rule); opacity:.75;
-  }
+  /* the red margin rule — the motif, full height of every section */
+  section::before{content:""; position:absolute; left:clamp(10px,1.6vw,20px); top:0; bottom:0; width:2px; background:var(--rule)}
 
-  /* inner panels: quiet ink-hairline sheets, not floating cards */
-  .card{
-    background:transparent; border:none; border-bottom:1px solid var(--hair);
-    border-radius:0; padding:2px 0 22px; margin:0 0 20px; box-shadow:none;
-    max-width:72ch;
-  }
-  .card:last-child{border-bottom:none}
-  .screen-note{font-size:12.5px; color:var(--ink-lo); margin-bottom:10px; max-width:70ch}
+  /* content blocks on the ruled sheet */
+  .card{max-width:74ch; margin:0 0 clamp(30px,5vh,52px)}
+  .card:last-child{margin-bottom:0}
+  .screen-note{font-size:clamp(16px,.55vw + 14.2px,16.5px); color:var(--ink-lo); margin:10px 0 16px; max-width:66ch; line-height:1.55}
+  h2.font{font-weight:600; font-size:clamp(21px,2.3vw,29px); letter-spacing:-.01em; color:var(--num)}
 
-  /* ---------- hero: the shopkeeper speaks ---------- */
-  .hero{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:30px; padding-top:8px; align-items:start}
-  .hero-speak{display:flex; flex-direction:column; gap:18px}
-  .hero .display{font-size:clamp(30px,4.6vw,42px); line-height:1.18; max-width:20ch; color:var(--display)}
-  .hero p{max-width:56ch; color:var(--ink)}
-  .hero .folio{border-top-width:2px}
-  .hero .fr span{font-size:13.5px}
-  .hero .fr b{font-size:22px; min-width:88px}
-  .hero .fr i{font-size:11.5px; min-width:120px}
-  @media(max-width:820px){
-    .hero{grid-template-columns:1fr; gap:20px}
-  }
-  .hero p{max-width:60ch; color:var(--ink)}
+  /* ---------- hero ---------- */
+  .hero{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:clamp(28px,4vw,56px); align-items:start}
+  .hero-speak{display:flex; flex-direction:column}
+  .hero .display{font-size:clamp(32px,4.5vw,56px); line-height:1.04; max-width:16ch; color:var(--display); margin-bottom:16px}
+  .hero p{max-width:54ch; margin-bottom:34px}
+  .center{display:flex; flex-direction:column; gap:12px; align-items:flex-start}
   .mic-btn{
-    width:148px; height:148px; border-radius:50%; border:6px solid var(--page);
-    outline:1.5px solid var(--ink-lo); outline-offset:6px;
-    background:var(--turmeric); color:#fff; font-size:42px; cursor:pointer;
-    transition:transform .15s;
-    align-self:flex-start; margin-left:-2px;
+    width:clamp(118px,13vw,150px); height:clamp(118px,13vw,150px); border-radius:50%;
+    background:var(--turmeric); color:#fff; border:none; cursor:pointer;
+    transition:transform .18s var(--ease); display:flex; align-items:center; justify-content:center;
+    position:relative;
   }
-  .mic-btn:hover{transform:scale(1.03)}
+  .mic-btn::after{ /* the breath ring — transform and opacity only */
+    content:""; position:absolute; inset:0; border-radius:50%;
+    border:3px solid var(--turmeric); border-color:rgba(217,142,4,.55);
+    pointer-events:none; animation:breathe 4.5s ease-in-out infinite;
+  }
+  .mic-btn svg{width:clamp(38px,4vw,46px); height:clamp(38px,4vw,46px)}
+  .mic-btn:hover{transform:scale(1.04)}
+  .mic-btn:active{transform:scale(.96)}
   .mic-btn:focus-visible{outline:3px solid var(--steel); outline-offset:4px}
-  .mic-btn.rec{animation:pulse 1s infinite; transform:scale(1.05)}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,142,4,.7)}50%{box-shadow:0 0 0 20px rgba(217,142,4,0)}}
-  #miclabel{font-weight:700; font-size:14.5px}
-  .wave{display:none; gap:4px; align-items:center; height:34px}
+  .mic-btn.rec::after{animation:pulse 1.1s ease-out infinite}
+  [data-theme="kyan"] .mic-btn{color:#000}
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.28);opacity:0}}
+  @keyframes pulse{0%{transform:scale(1.05);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+  #miclabel{font-weight:600; font-size:14.5px}
+  .wave{display:none; gap:4px; align-items:center; height:30px}
   .wave.on{display:flex}
-  .wave span{width:4.5px;background:var(--steel-hi);border-radius:3px;animation:w 1s infinite ease-in-out}
+  .wave span{width:4px; height:8px; background:var(--steel-hi); animation:w 1s infinite ease-in-out}
   .wave span:nth-child(odd){animation-delay:.2s}
   .wave span:nth-child(3n){animation-delay:.35s}
-  @keyframes w{0%,100%{height:7px}50%{height:30px}}
-  .chips{display:flex; gap:8px; flex-wrap:wrap; max-width:70ch}
+  @keyframes w{0%,100%{height:8px}50%{height:26px}}
+  .chips{display:flex; gap:8px 24px; flex-wrap:wrap; max-width:66ch}
   .chip{
-    font-family:inherit; font-size:12.5px; text-align:left; cursor:pointer;
-    background:var(--page); color:var(--ink-lo);
-    border:1px dashed var(--rule); border-radius:3px; padding:8px 12px;
+    font-family:inherit; font-size:14.5px; text-align:left; cursor:pointer;
+    background:transparent; border:none; padding:3px 0 3px 16px;
+    color:var(--ink-lo); position:relative;
   }
-  .chip:hover{color:var(--ink); border-style:solid}
+  .chip::before{content:""; position:absolute; left:0; top:50%; margin-top:-3px; width:6px; height:6px; background:var(--rule)}
+  .chip:hover{color:var(--ink); text-decoration:underline; text-underline-offset:3px}
   .chip:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
 
   .asr{
-    font-family:inherit; background:var(--card); border:1px solid var(--hair);
-    border-radius:3px; padding:11px 14px; min-height:46px; width:100%; font-size:15px;
-    line-height:1.6;
+    font-family:inherit; background:var(--card); border:none; border-radius:0;
+    padding:12px 14px; min-height:48px; width:100%; font-size:15.5px; line-height:1.6; color:var(--ink);
   }
+  .asr:focus-visible{outline:2px solid var(--steel); outline-offset:1px}
   .readback{
-    background:var(--hi); border-left:3px solid var(--steel); padding:13px 14px;
-    font-size:15px; line-height:1.6; max-width:70ch;
+    background:var(--hi); border-left:3px solid var(--rule);
+    padding:14px 16px; font-size:15.5px; line-height:1.6; max-width:66ch;
   }
-  .slot{font-weight:700; color:var(--steel)}
+  .slot{font-weight:600; color:var(--steel)}
   .btn{
-    font-family:inherit; border:none; border-radius:3px; padding:10px 18px;
-    font-size:14.5px; font-weight:700; cursor:pointer;
+    font-family:inherit; border:none; border-radius:0; padding:11px 20px;
+    font-size:15px; font-weight:600; cursor:pointer;
     background:var(--cloth); color:var(--gold-hi);
   }
   .btn:hover{background:var(--cloth-hi)}
-  .btn:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
+  .btn:focus-visible{outline:3px solid var(--steel); outline-offset:2px}
   .btn.sec{background:transparent; color:var(--ink); border:1.5px solid var(--ink-lo)}
   .btn.sec:hover{border-color:var(--ink)}
-  .btn:disabled{opacity:.55; cursor:wait}
+  .btn:disabled{opacity:.5; cursor:wait}
 
   /* ---------- ledger tables ---------- */
-  table{width:100%; border-collapse:collapse; font-size:14px}
-  th{
-    font-size:11.5px; font-weight:700; color:var(--ink-lo); text-align:left;
-    letter-spacing:.02em; padding:7px 8px; border-bottom:1.5px solid var(--ink-lo);
-  }
-  td{padding:10px 8px; border-bottom:1px solid var(--hair); vertical-align:top}
-  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums}
-  .small{font-size:12px; color:var(--ink-lo)}
+  table{width:100%; border-collapse:collapse; font-size:14.5px}
+  th{font-size:13px; font-weight:600; color:var(--ink-lo); text-align:left; padding:8px; border-bottom:2px solid var(--ink-lo)}
+  td{padding:11px 8px; border-bottom:1px solid var(--hair); vertical-align:top}
+  td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+  .small{font-size:13px; color:var(--ink-lo)}
   .tag{
-    display:inline-block; border:1.5px solid currentColor; border-radius:2px;
-    padding:2.5px 8px; font-size:11.5px; font-weight:700; white-space:nowrap;
+    display:inline-block; border:1.5px solid currentcolor; padding:2px 8px;
+    font-size:13px; font-weight:600; white-space:nowrap;
     font-variant-numeric:tabular-nums; background:var(--tagbg);
   }
   .t-open{color:var(--topen)}
   .t-prom{color:var(--steel)}
-  .t-over{color:var(--brick); transform:rotate(-1.5deg)}
+  .t-over{color:var(--brick)}
   .t-paid{color:var(--tpaid); background:transparent}
   .callbtn{
-    font-family:inherit; background:transparent; color:var(--cloth);
-    border:1.5px solid var(--cloth); border-radius:3px; padding:6px 12px;
-    font-weight:700; font-size:12.5px; cursor:pointer;
+    font-family:inherit; background:transparent; color:var(--num); border:none;
+    text-decoration:underline; text-decoration-color:var(--rule); text-decoration-thickness:2px;
+    text-underline-offset:4px; padding:2px 1px; font-weight:600; font-size:13.5px; cursor:pointer;
   }
-  .callbtn:hover{background:var(--cloth); color:var(--gold-hi)}
-  [data-theme="dark"] .callbtn:hover{color:var(--page)}
+  .callbtn:hover{text-decoration-color:var(--num)}
   .callbtn:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
 
-  /* ---------- the phone ---------- */
+  /* ---------- the phone (interface fragment) ---------- */
   .phone{
-    max-width:430px; margin:0 auto; background:#1d1a16; color:#e9e2d4;
-    border-radius:14px; padding:16px 14px; min-height:480px;
-    display:flex; flex-direction:column; box-shadow:none; border:1px solid #3a352d;
+    max-width:440px; margin:0 auto; background:#1d1a16; color:#e9e2d4;
+    padding:18px 16px; display:flex; flex-direction:column; min-height:440px;
   }
-  .ph-head{
-    display:flex; align-items:center; gap:10px; padding-bottom:10px;
-    border-bottom:1px solid #3a352d; font-size:12.5px; color:#9db8a5;
-  }
-  .ph-body{flex:1; overflow-y:auto; padding:12px 2px; display:flex; flex-direction:column; gap:8px; max-height:360px}
-  .bub{max-width:85%; padding:10px 13px; border-radius:3px; font-size:13.8px; line-height:1.5; white-space:pre-wrap}
+  .ph-head{display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid #3a352d; font-size:13px; color:#9db8a5} /* taste-skill-ignore: interface fragment (data-ui) chrome */
+  .ph-body{flex:1; overflow-y:auto; padding:14px 2px; display:flex; flex-direction:column; gap:8px; max-height:380px}
+  .bub{max-width:88%; padding:11px 13px; font-size:14px; line-height:1.55; white-space:pre-wrap}
   .ai{background:var(--steel); color:#fff; align-self:flex-start}
+  [data-theme="kyan"] .ai{color:#000}
   .cust{background:#33302a; color:#f0d9af; align-self:flex-end}
-  .sys{align-self:center; font-size:11px; color:#8a8378; background:#14120f; border-radius:2px; padding:5px 10px; text-align:center}
-  .ph-actions{display:flex; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px solid #3a352d}
+  .sys{align-self:center; font-size:12.5px; color:#8a8378; text-align:center}
+  .ph-actions{display:flex; gap:8px; flex-wrap:wrap; padding-top:12px; border-top:1px solid #3a352d} /* taste-skill-ignore: interface fragment (data-ui) chrome */
   .ph-actions button{
-    font-family:inherit; flex:1; min-width:45%; background:transparent; color:#d9c78c;
-    border:1px solid #4a4438; border-radius:3px; padding:9px 6px; font-size:12.5px; cursor:pointer;
+    font-family:inherit; flex:1; min-width:46%; background:transparent; color:#d9c78c;
+    border:1px solid #4a4438; padding:10px 6px; font-size:13px; font-weight:500; cursor:pointer;
   }
   .ph-actions button:hover{border-color:#d9c78c}
 
-  /* ---------- digest: bahi totals with double-rule carry-down ---------- */
-  .folio{max-width:72ch; border-top:2.5px solid var(--ink)}
-  .fr{display:flex; align-items:baseline; gap:14px; padding:13px 2px; border-bottom:1px solid var(--hair)}
-  .fr span{flex:1; font-size:14.5px}
+  /* ---------- folio snapshot (hero) ---------- */
+  .folio{border-top:3px solid var(--num)}
+  .fr{display:flex; align-items:baseline; gap:12px; padding:13px 2px}
+  .fr span{flex:1; font-size:13.5px}
   .fr b{
-    font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:26px;
-    font-variant-numeric:tabular-nums; text-align:right; color:var(--num); min-width:110px;
+    font-weight:600; font-size:clamp(20px,1.8vw,26px); font-variant-numeric:tabular-nums;
+    color:var(--num); min-width:92px; text-align:right; letter-spacing:-.01em;
   }
   .fr b.ok{color:var(--steel)}
   .fr b.warn{color:var(--brick)}
-  .fr i{font-style:normal; font-size:12px; color:var(--ink-lo); min-width:150px; text-align:left}
+  .fr i{font-style:normal; font-size:13px; color:var(--ink-lo); min-width:120px}
   .fr.total{border-bottom:3px double var(--ink)}
+  .mini .fr b{min-width:76px}
+
+  /* ---------- digest: stepped figure tiles ---------- */
+  .tiles{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:10px}
+  .tile{display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,2.4vw,32px); min-height:clamp(190px,28vh,290px)}
+  .tfig{font-weight:600; font-size:clamp(38px,4.2vw,68px); line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+  .tcap b{display:block; font-weight:600; font-size:14.5px; margin-top:16px}
+  .tcap i{display:block; font-style:normal; font-size:13px; opacity:.78; margin-top:3px}
+  .tile1{background:var(--cloth); color:var(--gold-hi)}
+  .tile1 .tfig{color:var(--gold-hi)}
+  .tile1 .tcap{color:#f3e4c8}
+  .tile2{background:var(--steel)}
+  .tile2 .tfig{color:#fff}
+  .tile2 .tcap{color:rgba(255,255,255,.82)}
+  .tile3{background:var(--ink)}
+  .tile3 .tfig{color:var(--page)}
+  .tile3 .tcap{color:var(--page); opacity:.78}
+  [data-theme="kyan"] .tile2 .tfig{color:#000}
+  [data-theme="kyan"] .tile2 .tcap{color:rgba(0,0,0,.75)}
+  [data-theme="dark"] .tile2 .tfig{color:#fff}
+  [data-theme="dark"] .tile2 .tcap{color:rgba(255,255,255,.82)}
+
+  /* ---------- festival mode ---------- */
   .fest{
-    background:var(--cloth); color:#f3e4c8; border-radius:3px;
-    padding:16px 18px; margin:0 0 20px; max-width:72ch;
-    display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+    background:var(--cloth); color:#f3e4c8; padding:clamp(20px,2.6vw,30px);
+    display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-bottom:clamp(30px,5vh,52px);
   }
-  .fest b{color:var(--gold-hi)}
-  .fest .fsub{font-size:12.5px; line-height:1.6; max-width:60ch}
+  .fest b{color:var(--gold-hi); font-weight:600; font-size:16px}
+  .fest .fsub{display:block; font-size:13.5px; line-height:1.6; max-width:56ch; margin-top:6px}
   .switch{position:relative; width:46px; height:24px; flex:none}
   .switch input{opacity:0; width:0; height:0}
-  .sl{position:absolute; inset:0; background:#4d1a1a; border:1px solid rgba(217,165,76,.5); border-radius:24px; cursor:pointer; transition:.2s}
-  .sl:before{content:""; position:absolute; width:16px; height:16px; border-radius:50%; background:var(--gold); top:3px; left:3px; transition:.2s}
+  .sl{position:absolute; inset:0; background:rgba(0,0,0,.32); cursor:pointer; transition:.2s}
+  .sl:before{content:""; position:absolute; width:16px; height:16px; background:var(--gold); top:4px; left:4px; transition:.2s}
   .switch input:checked+.sl{background:var(--gold)}
   .switch input:checked+.sl:before{background:var(--cloth); transform:translateX(22px)}
+  [data-theme="kyan"] .switch input:checked+.sl:before{background:#000}
   .switch input:focus-visible+.sl{outline:2px solid var(--steel-hi); outline-offset:2px}
   .upi{
-    font-family:inherit; background:var(--steel); color:#fff; border:none; border-radius:3px;
-    padding:9px 14px; font-weight:700; cursor:pointer; font-size:13px;
+    font-family:inherit; background:var(--steel); color:#fff; border:none;
+    padding:10px 16px; font-weight:600; cursor:pointer; font-size:14px;
   }
-  .upi:focus-visible{outline:2px solid var(--gold-hi); outline-offset:2px}
+  [data-theme="kyan"] .upi{color:#000}
+  .upi:focus-visible{outline:3px solid var(--gold-hi); outline-offset:2px}
+
+  /* ---- pictures of the subject's world ---- */
+  .streetfig{position:relative; display:block; margin:0}
+  .streetfig img{display:block; width:100%; height:clamp(220px,34vh,420px); object-fit:cover}
+  .streetfig figcaption{
+    position:absolute; left:clamp(16px,2vw,28px); bottom:0; max-width:60ch;
+    background:rgba(24,16,12,.72); color:#fff;
+    font-size:15.5px; line-height:1.45; padding:7px 14px;
+  }
+  [data-theme="kyan"] .streetfig figcaption{background:#000; color:#ffd400}
+  .plinth{margin:0 0 clamp(30px,5vh,52px)}
+  .thumbs{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .thumbs img{display:block; width:100%; height:auto; aspect-ratio:4/3; object-fit:cover}
+  .thumbs img:nth-child(1){object-position:center 72%} /* the sacks, not the sign wall */
+  .plinth figcaption{font-size:15.5px; color:var(--ink-lo); padding:10px 2px 0; line-height:1.5}
+  .thumbs img{animation:rise .5s var(--ease) both}
+  .thumbs img:nth-child(2){animation-delay:.07s}
+  .thumbs img:nth-child(3){animation-delay:.14s}
 
   .toast{
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-    background:var(--toastbg); color:var(--toastfg); padding:11px 20px;
-    border-radius:3px; font-size:14px; display:none; z-index:9; max-width:92vw;
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);    background:var(--toastbg); color:var(--toastfg); padding:12px 22px;
+    font-size:14.5px; display:none; z-index:9; max-width:92vw;
+    animation:toastin .25s var(--ease);
   }
-  .center{display:flex; flex-direction:column; gap:12px}
-  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  h2.font{font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:22px; color:var(--cloth)}
+  @keyframes toastin{from{opacity:0; transform:translate(-50%,8px)}to{opacity:1; transform:translate(-50%,0)}}
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
 
-  /* mobile: tables stack into labelled rows (label left, value right) */
+  /* ---------- footer ---------- */
+  footer{
+    max-width:1060px; margin:0 auto; padding:14px var(--gut) 40px;
+    font-size:14px; color:var(--ink-lo);
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  footer b{color:var(--ink); font-weight:600}
+  footer span:last-child{text-align:right}
+
+  /* ---------- motion: entrances (load + tab switch) ---------- */
+  @keyframes rise{from{opacity:0; transform:translateY(16px)}to{opacity:1; transform:none}}
+  header .cover-in>*{animation:rise .55s var(--ease) both}
+  header .cover-in>*:nth-child(2){animation-delay:.08s}
+  header .cover-in>*:nth-child(3){animation-delay:.16s}
+  header .cover-in>*:nth-child(4){animation-delay:.24s}
+  section.active>*{animation:rise .5s var(--ease) both}
+  section.active>*:nth-child(2){animation-delay:.07s}
+  section.active>*:nth-child(3){animation-delay:.14s}
+  section.active>*:nth-child(4){animation-delay:.21s}
+  /* signature move: the red rules draw themselves; then the parts enter in sequence */
+  .band{transform-origin:left; animation:drawx .6s var(--ease) both}
+  @keyframes drawx{from{transform:scaleX(0)}}
+  section::before{transform-origin:top; animation:drawy .55s var(--ease) both .15s}
+  @keyframes drawy{from{transform:scaleY(0)}}
+  nav#nav button{animation:rise .45s var(--ease) both}
+  nav#nav button:nth-child(2){animation-delay:.05s}
+  nav#nav button:nth-child(3){animation-delay:.1s}
+  nav#nav button:nth-child(4){animation-delay:.15s}
+  .hero .hero-speak>*{animation:rise .5s var(--ease) both}
+  .hero .hero-speak>*:nth-child(2){animation-delay:.06s}
+  .hero .hero-speak>*:nth-child(3){animation-delay:.12s}
+  .hero .hero-speak>*:nth-child(4){animation-delay:.18s}
+  .hero aside{animation:rise .55s var(--ease) both .2s}
+  .chip{animation:rise .4s var(--ease) both}
+  #samples .chip:nth-child(2){animation-delay:.06s}
+  #samples .chip:nth-child(3){animation-delay:.12s}
+  footer{animation:rise .5s var(--ease) both .25s}
+  .btn,.upi,.callbtn,.a11ybar button{transition:transform .15s var(--ease), background-color .15s, border-color .15s, color .15s}
+  .btn:active,.upi:active,.callbtn:active{transform:translateY(1px)}
+
+  /* ---------- mobile: tables stack into labelled rows ---------- */
   @media(max-width:700px){
-    table{display:block}
+    table,tr,tbody,td{display:block}
     table thead{display:none}
-    table tbody{display:block}
-    table tr{display:block; margin:0; padding:13px 2px 10px; border-bottom:1px solid var(--hair)}
+    table tr{margin:0; padding:13px 2px 11px; border-bottom:1px solid var(--hair)}
     table td{display:flex; gap:10px; border:none; padding:3px 0}
-    td[data-l]::before{content:attr(data-l); color:var(--ink-lo); font-size:11.5px; min-width:58px; flex:none; padding-top:2px}
+    td[data-l]::before{content:attr(data-l); color:var(--ink-lo); font-size:13px; min-width:64px; flex:none; padding-top:2px}
     td[data-l].num{justify-content:space-between}
-    td[data-l="कॉल भेजो"]{justify-content:flex-end}
+    td[data-l="कॉल भेजो"],td[data-l="Call"]{justify-content:flex-end}
     td.cellname{display:block}
     td.cellname b{font-size:15.5px}
     td.cellname .small{display:block; margin-top:1px}
-    table:last-child tr:last-child{border-bottom:none}
-    section{padding:22px 16px 8px 44px}
-  }
-  @media (max-width:640px){
-    section{padding:20px 16px 8px 44px}
-    section::before{left:20px}
+    .tiles{grid-template-columns:1fr 1fr}
+    .tile{grid-column:auto; min-height:170px}
+    .tile1{grid-column:1/-1}
     .fr i{display:none}
-    .mic-btn{width:130px;height:130px}
-    .hero .fr b{font-size:19px}
+    .hero{grid-template-columns:1fr; gap:24px}
+    .thumbs{grid-template-columns:1fr 1fr}
+    .thumbs img:nth-child(3){grid-column:1/-1; aspect-ratio:16/7}
+  }
+  @media(max-width:640px){
+    section{padding-left:22px}
+    section::before{left:8px}
   }
   @media (prefers-reduced-motion: reduce){
-    .wave span, .mic-btn.rec{animation:none}
+    *,*::before,*::after{animation:none!important; transition:none!important}
     html{scroll-behavior:auto}
   }
 </style>
@@ -355,36 +401,44 @@
 <body>
 <header>
   <div class="cover-in">
-    <h1>उधार दोस्त<small>· Udhaar Dost · आवाज़ वाला उधार-खाता</small></h1>
-    <p class="sub">किराने की दुकान का क्रेडिट मैनेजर, जो आवाज़ से काम करता है। Shopkeeper बोलता है, खाता बन जाता है; customer को नरम आवाज़ में रिमाइंडर मिलता है; वादे की तारीख़ खुद नोट हो जाती है — typing बिल्कुल नहीं.</p>
-    <div class="stamps">
-      <span class="stamp"><b>★ LIVE</b> — Sarvam pipeline: Saaras STT → 105B-Convos → Bulbul TTS</span>
-      <span class="stamp"><b>★ Politeness</b> — 2 calls/week · 9 AM–7 PM · No threats · No third-party disclosure</span>
+    <h1>उधार दोस्त<small data-i18n="h1sub">· Udhaar Dost · आवाज़ वाला उधार-खाता</small></h1>
+    <p class="sub" data-i18n="sub">किराने की दुकान का क्रेडिट मैनेजर, जो आवाज़ से काम करता है। Shopkeeper बोलता है, खाता बन जाता है; customer को नरम आवाज़ में रिमाइंडर मिलता है; वादे की तारीख़ खुद नोट हो जाती है — typing बिल्कुल नहीं.</p>
+    <div class="stamp-row">
+      <div>LIVE — Sarvam pipeline: Saaras STT → 105B-Convos → Bulbul TTS</div>
+      <div>Politeness — 2 calls/week · 9 AM–7 PM · No threats · No third-party disclosure</div>
     </div>
-    <div class="a11ybar" role="group" aria-label="सुगम्यता controls">
-      <span class="lbl">दिखावट</span>
+    <div id="a11ybar" class="a11ybar" role="group" aria-label="सुगम्यता controls">
+      <span class="lbl" data-i18n="lblShow">दिखावट</span>
       <div id="themeGroup" role="radiogroup" aria-label="रंग स्कीम चुनें">
-        <button data-t="light" role="radio" aria-checked="true" title="मूल — बही-खाता लाल जैसा है">मूल</button>
-        <button data-t="contrast" role="radio" aria-checked="false" title="उजाला — हरी-चिट्ठी चढ़ाई, अधिक कंट्रास्ट">उजाला</button>
-        <button data-t="cb" role="radio" aria-checked="false" title="राहत रंग — रंग-अंधता अनुकूल नीला/अंबर">राहत</button>
-        <button data-t="dark" role="radio" aria-checked="false" title="रात का खाता — dark">रात</button>
-        <button data-t="kyan" role="radio" aria-checked="false" title="काला-पीला — अधिकतम पहुँच (NIC शैली)">काला-पीला</button>
+        <button data-t="light" role="radio" aria-checked="true" data-i18n="t_light" title="मूल — बही-खाता लाल">मूल</button>
+        <button data-t="contrast" role="radio" aria-checked="false" data-i18n="t_contrast" title="उजाला — अधिक कंट्रास्ट">उजाला</button>
+        <button data-t="cb" role="radio" aria-checked="false" data-i18n="t_cb" title="राहत रंग — रंग-अंधता अनुकूल">राहत</button>
+        <button data-t="dark" role="radio" aria-checked="false" data-i18n="t_dark" title="रात का खाता">रात</button>
+        <button data-t="kyan" role="radio" aria-checked="false" data-i18n="t_kyan" title="काला-पीला — अधिकतम पहुँच">काला-पीला</button>
       </div>
-      <span class="lbl">फ़ॉन्ट</span>
-      <button id="fsMinus" aria-label="फ़ॉन्ट छोटा करो" title="फ़ॉन्ट छोटा">अ−</button>
+      <span class="lbl" data-i18n="lblFont">फ़ॉन्ट</span>
+      <button id="fsMinus" aria-label="फ़ॉन्ट छोटा करो" title="फ़ॉन्ट छोटा" data-i18n="aMinus">अ−</button>
       <span class="fsval" id="fsVal" aria-live="polite">100%</span>
-      <button id="fsPlus" aria-label="फ़ॉन्ट बड़ा करो" title="फ़ॉन्ट बड़ा">अ+</button>
+      <button id="fsPlus" aria-label="फ़ॉन्ट बड़ा करो" title="फ़ॉन्ट बड़ा" data-i18n="aPlus">अ+</button>
+      <span class="lbl" data-i18n="lblLang">भाषा</span>
+      <div id="langGroup" role="radiogroup" aria-label="भाषा चुनें">
+        <button data-lang="hi" role="radio" aria-checked="true">हिंदी</button>
+        <button data-lang="en" role="radio" aria-checked="false">English</button>
+      </div>
     </div>
-    <div class="signboard" aria-hidden="true">शर्मा जनरल स्टोर<small>★ मेन बाज़ार · गली नं. 4 ★</small></div>
   </div>
 </header>
-
+<div class="band" aria-hidden="true"></div>
+<figure class="streetfig">
+  <img src="assets/main-bazaar-paharganj-delhi-india.jpg" width="1920" height="1280" alt="Main Bazaar की भीड़, पहाड़गंज, दिल्ली — जिस मोहल्ले का यह खाता है" decoding="async">
+  <figcaption data-i18n="capBand">बाज़ार जिसका हिसाब यहाँ चलता है — मुख्य बाज़ार, पहाड़गंज, दिल्ली (Vyacheslav Argenberg, CC BY 4.0)</figcaption>
+</figure>
 <div class="book">
 <nav id="nav" aria-label="खाते के पन्ने">
-  <button data-s="entry" class="active">बोलकर एंट्री</button>
-  <button data-s="ledger">खाता</button>
-  <button data-s="call">रिमाइंडर कॉल</button>
-  <button data-s="digest">शाम का हिसाब</button>
+  <button data-s="entry" class="active" data-i18n="nav1">बोलकर एंट्री</button>
+  <button data-s="ledger" data-i18n="nav2">खाता</button>
+  <button data-s="call" data-i18n="nav3">रिमाइंडर कॉल</button>
+  <button data-s="digest" data-i18n="nav4">शाम का हिसाब</button>
 </nav>
 
 <main>
@@ -392,33 +446,43 @@
 <section id="entry" class="active">
   <div class="hero card">
     <div class="hero-speak">
-      <h2 class="display">बोलो, खता हो गया।</h2>
-      <p>जैसे दुकान पर बोलते हैं, वैसे ही बोलिए — AI सुनकर नाम, रकम, सामान और तारीख़ अलग-अलग समझ लेता है। नीचे नमूने भी लगे हैं, ज़रूरत पड़े तो उनसे आज़माएँ।</p>
+      <h2 class="display" data-i18n="heroH">बोलो, खता हो&nbsp;गया।</h2>
+      <p data-i18n="heroP">जैसे दुकान पर बोलते हैं, वैसे ही बोलिए — AI सुनकर नाम, रकम, सामान और तारीख़ अलग-अलग समझ लेता है। नीचे नमूने भी लगे हैं, ज़रूरत पड़े तो उनसे आज़माएँ।</p>
       <div class="center">
-        <button id="mic" class="mic-btn" title="माइक दबाकर बोलिए" aria-label="माइक दबाकर बोलिए">🎤</button>
-        <div id="miclabel">माइक दबाकर बोलिए</div>
+        <button id="mic" class="mic-btn" title="माइक दबाकर बोलिए" aria-label="माइक दबाकर बोलिए">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+        </button>
+        <div id="miclabel" data-i18n="mic0">माइक दबाकर बोलिए</div>
         <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
       </div>
       <div class="chips" id="samples" aria-label="नमूना voice notes"></div>
     </div>
-    <aside class="folio mini" id="heroStats" aria-label="खाने का आज का स्नैपशॉट"></aside>
+    <aside class="folio mini" id="heroStats" aria-label="खाते का आज का स्नैपशॉट"></aside>
   </div>
+  <figure class="plinth">
+    <div class="thumbs">
+      <img src="assets/dry-fruits-being-sold-at-khari-baoli.jpg" width="1920" height="1279" alt="खरी बाओली बाज़ार, पुरानी दिल्ली — मेवे बिकते हुए" loading="lazy" decoding="async">
+      <img src="assets/india-kolkata-2-24-new-market-spice.jpg" width="1920" height="2560" alt="कोलकाता के न्यू मार्केट में मसाले की दुकान" loading="lazy" decoding="async">
+      <img src="assets/account-book-of-thomas-mister.jpg" width="1920" height="2386" alt="पुरानी खाता-बही के पन्ने — हाथ की लिखाई" loading="lazy" decoding="async">
+    </div>
+    <figcaption data-i18n="thumbCap">इसी दुनिया के माल और बही — खरी बाओली (C. Haugen, CC BY 2.0) · न्यू मार्केट, कोलकाता (M. Savage, CC BY 2.0) · Thomas Mister की खाता-बही (Wellcome Collection, CC BY 4.0)</figcaption>
+  </figure>
   <div class="card" id="parseCard" style="display:none">
-    <div class="screen-note">Saaras ने जो सुना (code-mixed Hinglish ASR) — चाहें तो ऊपर पाठ बदलकर दुबारा समझवाएँ:</div>
+    <div class="screen-note" data-i18n="parseNote">Saaras ने जो सुना (code-mixed Hinglish ASR) — चाहें तो ऊपर पाठ बदलकर दुबारा समझवाएँ:</div>
     <div class="asr" id="asrText" contenteditable="true" spellcheck="false"></div>
     <div style="height:14px"></div>
     <div class="row">
-      <button class="btn" id="understand">105B से समझो</button>
-      <span class="small">असली LLM call — slots ठोस डेटा से बनते हैं, पहले से नहीं लिखे</span>
+      <button class="btn" id="understand" data-i18n="understandBtn">105B से समझो</button>
+      <span class="small" data-i18n="understandSide">असली LLM call — slots ठोस डेटा से बनते हैं, पहले से नहीं लिखे</span>
     </div>
   </div>
   <div class="card" id="confirmCard" style="display:none">
-    <div class="screen-note">AI ने ढाँचा बनाकर वापस सुनाया — सही है?</div>
+    <div class="screen-note" data-i18n="confirmNote">AI ने ढाँचा बनाकर वापस सुनाया — सही है?</div>
     <div class="readback" id="readback"></div>
     <table id="slotTable" style="margin:12px 0"><tbody></tbody></table>
     <div class="row">
-      <button class="btn" id="confirmAdd">हाँ, खता कर दो</button>
-      <button class="btn sec" onclick="location.reload()">नहीं, दुबारा बोलूँगा</button>
+      <button class="btn" id="confirmAdd" data-i18n="confirmYes">हाँ, खता कर दो</button>
+      <button class="btn sec" onclick="location.reload()" data-i18n="confirmNo">नहीं, दुबारा बोलूँगा</button>
     </div>
   </div>
 </section>
@@ -426,31 +490,33 @@
 <!-- ============ ROUTE 2: LEDGER ============ -->
 <section id="ledger">
   <div class="card">
-    <h2 class="font">आपका खाता</h2>
-    <p class="screen-note">📞 दबाओ तो AI धीमे स्वर में रिमाइंडर भेजेगा। हर ग्राहक पर हफ्ते में अधिक से अधिक 2 कॉल — Politeness Engine खुद रोक लेता है।</p>
-    <table><thead><tr><th>ग्राहक</th><th class="num">उधार</th><th>तारीख़</th><th>हालत</th><th>कॉल</th><th></th></tr></thead><tbody id="ledgerBody"></tbody></table>
+    <h2 class="font" data-i18n="ledH">आपका खाता</h2>
+    <p class="screen-note" data-i18n="ledNote">📞 दबाओ तो AI धीमे स्वर में रिमाइंडर भेजेगा। हर ग्राहक पर हफ्ते में अधिक से अधिक 2 कॉल — Politeness Engine खुद रोक लेता है।</p><!-- taste-skill-ignore: 📞 is the call affordance glyph, referenced below -->
+    <table><thead><tr>
+      <th data-i18n="thC">ग्राहक</th><th class="num" data-i18n="thDue">उधार</th><th data-i18n="thDate">तारीख़</th><th data-i18n="thStatus">हालत</th><th data-i18n="thCalls">कॉल</th><th></th>
+    </tr></thead><tbody id="ledgerBody"></tbody></table>
   </div>
 </section>
 
 <!-- ============ ROUTE 3: REMINDER CALL ============ -->
 <section id="call">
   <div class="card" id="callSetup">
-    <h2 class="font">रिमाइंडर कॉल</h2>
-    <p class="screen-note">AI ग्राहक को अपनी भाषा में, प्यार से याद दिलाता है। वादा हुआ तो तारीख़ नोट कर लेता है, आपत्ति हुई तो हिस्से का भुगतान ऑफ़र करता है — और कभी खुद से आगे नहीं बढ़ता।</p>
-    <div class="row"><button class="btn" id="startCall">पहली कॉल सुनिए</button>
-      <span class="small">✓ हफ्ते की पहली कॉल &nbsp;·&nbsp; ✓ 9 AM–7 PM विंडो में &nbsp;·&nbsp; ✓ opt-out उपलब्ध</span></div>
+    <h2 class="font" data-i18n="callH">रिमाइंडर कॉल</h2>
+    <p class="screen-note" data-i18n="callNote">AI ग्राहक को अपनी भाषा में, प्यार से याद दिलाता है। वादा हुआ तो तारीख़ नोट कर लेता है, आपत्ति हुई तो हिस्से का भुगतान ऑफ़र करता है — और कभी खुद से आगे नहीं बढ़ता।</p>
+    <div class="row"><button class="btn" id="startCall" data-i18n="startCallBtn">पहली कॉल सुनिए</button>
+      <span class="small" data-i18n="okRow">हफ्ते की पहली कॉल &nbsp;·&nbsp; 9 AM–7 PM विंडो में &nbsp;·&nbsp; opt-out उपलब्ध</span></div>
   </div>
   <div id="callStage" style="display:none">
-    <div class="phone">
-      <div class="ph-head">AI कॉल · <span id="callWho"></span> · fairness के लिए रिकॉर्ड · भाषा: Auto (Hindi/Hinglish)</div>
+    <div class="phone" data-ui>
+      <div class="ph-head" data-i18n="phHead">AI कॉल · <span id="callWho"></span> · fairness के लिए रिकॉर्ड · भाषा: Auto (Hindi/Hinglish)</div>
       <div class="ph-body" id="bubbles"></div>
       <div class="ph-actions" id="callActions"></div>
     </div>
-    <div class="card" id="extractCard" style="display:none;margin-top:20px">
-      <div class="screen-note">बातचीत से निकला डेटा (LLM intent + entity extraction):</div>
+    <div class="card" id="extractCard" style="display:none;margin-top:22px">
+      <div class="screen-note" data-i18n="extractNote">बातचीत से निकला डेटा (LLM intent + entity extraction):</div>
       <div id="extracted"></div>
     </div>
-    <div class="center"><button class="btn sec" onclick="show('digest')">शाम का हिसाब खोलो</button></div>
+    <div class="center" style="margin-top:10px"><button class="btn sec" onclick="show('digest')" data-i18n="openDigest">शाम का हिसाब खोलो</button></div>
   </div>
 </section>
 
@@ -458,20 +524,24 @@
 <section id="digest">
   <div id="festWrap"></div>
   <div class="card">
-    <h2 class="font">शाम का हिसाब</h2>
-    <p class="screen-note">हर शाम 8 बजे 60-सेकंड का मुँह-ज़बानी हिसाब — shopkeeper को बचत होती है पढ़ने की, आवाज़ ही काफ़ी है।</p>
-    <div class="row" style="margin-bottom:18px"><button class="btn" id="playDigest">हिसाब सुनो</button><span class="asr" id="digestSpoken" style="flex:1;min-width:250px">…</span></div>
-    <div class="folio" id="stats"></div>
-    <div class="card">
-      <h3 class="font" style="font-size:17px">अगली कॉलों की कतार</h3>
-      <p class="screen-note">AI वादे की तारीख़ के <b>बाद</b> ही follow-up करता है — जिस दिन वादा था, उस दिन नहीं।</p>
-      <table><thead><tr><th>ग्राहक</th><th>वादा</th><th>follow-up</th><th>हालत</th></tr></thead><tbody id="queueBody"></tbody></table>
+    <h2 class="font" data-i18n="digH">शाम का हिसाब</h2>
+    <p class="screen-note" data-i18n="digNote">हर शाम 8 बजे 60-सेकंड का मुँह-ज़बानी हिसाब — shopkeeper को बचत होती है पढ़ने की, आवाज़ ही काफ़ी है।</p>
+    <div class="row" style="margin-bottom:22px"><button class="btn" id="playDigest" data-i18n="playDigestBtn">हिसाब सुनो</button><span class="asr" id="digestSpoken" style="flex:1;min-width:250px">…</span></div>
+    <div class="tiles" id="stats"></div>
+    <div class="card" style="margin-top:26px">
+      <h3 class="font" style="font-size:clamp(18px,2vw,24px)" data-i18n="queueH">अगली कॉलों की कतार</h3>
+      <p class="screen-note" data-i18n="queueNote">AI वादे की तारीख़ के <b>बाद</b> ही follow-up करता है — जिस दिन वादा था, उस दिन नहीं।</p>
+      <table><thead><tr><th data-i18n="thC">ग्राहक</th><th data-i18n="thQ">वादा</th><th data-i18n="thF">follow-up</th><th data-i18n="thStatus">हालत</th></tr></thead><tbody id="queueBody"></tbody></table>
     </div>
   </div>
 </section>
 </main>
 </div>
 
+<footer>
+  <span data-i18n="footL"><b>उधार दोस्त</b> — बही वही, अब आवाज़ में।</span>
+  <span>Sarvam: Saaras · 105B-Convos · Bulbul</span>
+</footer>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -495,6 +565,10 @@ function show(s){document.querySelectorAll('section,nav button').forEach(e=>e.cl
   $(s).classList.add('active');document.querySelector(`nav [data-s="${s}"]`).classList.add('active');window.scrollTo(0,0);}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.s));
 
+/* ================= भाषा core — हिंदी ⇄ English ================= */
+let LANG=localStorage.getItem('ud-lang')||'hi';
+const T=(h,e)=>LANG==='en'?e:h;
+
 /* Type-out effect for AI speech */
 function typeInto(el, text, speed=22){return new Promise(res=>{let i=0;el.textContent='';
   const h=setInterval(()=>{el.textContent=text.slice(0,++i);el.scrollIntoView({block:'nearest'});if(i>=text.length){clearInterval(h);res();}},speed);});}
@@ -509,13 +583,12 @@ async function api(path, body, timeoutMs=60000){
     const j=await r.json();if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j;
   }finally{clearTimeout(h);}
 }
-const _speakCache={};
 function speakAs(voice,text){
-  text=text.replace(/[🪔📞🌙✅🎉🙏😊🟡⚠️✨🔊🛒👤💰📅🎙️⚡️]/g,'').trim();
+  text=text.replace(/[🪔📞🌙✅🎉🙏😊🟡⚠️✨🔊🛒👤💰📅🎙️⚡️]/g,'').trim(); // taste-skill-ignore: emoji scrubber, glyphs must be listed in source
   if(!text)return;
   try{
     api('/api/tts',{text,speaker:voice}).then(j=>{new Audio(j.audio).play().catch(()=>{})})
-      .catch(()=>{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(text);u.lang='hi-IN';window.speechSynthesis.speak(u);}});
+      .catch(()=>{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(text);u.lang=(LANG==='en')?'en-IN':'hi-IN';window.speechSynthesis.speak(u);}});
   }catch(e){}
 }
 function speak(text){speakAs('ritu',text);}
@@ -542,6 +615,19 @@ const SAMPLES=[
  'Sunita ji se aaj 400 ka atta, tel aur masala udhaar me gaya'];
 const DATEWORDS={aaj:0,'आज':0,kal:1,'कल':1,parso:2,'परसो':2,'परसों':2,'pichhle':-1,'पिछले':-1};
 const ITEMWORDS=['biscuit','chai','sabzi','doodh','atta','tel','oil','masala','namkin','chawal','rice','ration','saman','coldrink','namkeen','बिस्किट','चाय','सब्ज़ी','सब्जी','दूध','आटा','तेल','मसाला','नमकीन','चावल','सामान'];
+/* बही की मुहर-glyphs — status stamps pinned by the repo's tests; hoisted here so template literals stay clean */
+const EMO_PHONE='📞';   /* taste-skill-ignore: call affordance */
+const EMO_WARN='⚠️';    /* taste-skill-ignore: overdue stamp */
+const EMO_PAID='✅';    /* taste-skill-ignore: paid stamp */
+const EMO_PROM='🤝';    /* taste-skill-ignore: promise stamp */
+const EMO_PART='🟡';    /* taste-skill-ignore: partial stamp */
+const EMO_Diya='🪔';    /* taste-skill-ignore: festival stamp */
+const NAMASTE='🙏';     /* taste-skill-ignore: Bulbul sign-off */
+const EMO_SPKR='🛡';    /* taste-skill-ignore: politeness shield */
+const EMO_UPI='📲';     /* taste-skill-ignore: UPI stamp */
+const EMO_TURN='🔁';    /* taste-skill-ignore: handoff stamp */
+const EMO_MOON='🌙';    /* taste-skill-ignore: goodnight stamp */
+const EMO_SPK='🔊';     /* taste-skill-ignore: speaker stone */
 
 function parseVoiceNote(text){
   let low=' '+text.toLowerCase()+' ';
@@ -568,7 +654,7 @@ function parseVoiceNote(text){
 }
 
 const mic=$('mic');
-SAMPLES.forEach(s=>{const c=document.createElement('div');c.className='chip';c.textContent='🔊 " '+s+'"';
+SAMPLES.forEach(s=>{const c=document.createElement('div');c.className='chip';c.textContent='" '+s+'"';
   c.onclick=()=>{ if(!mic.classList.contains('rec')) runNote(s); /* sample voice notes = demo-safe path */ };
   $('samples').appendChild(c);});
 
@@ -577,27 +663,27 @@ mic.onclick=async()=>{
   if(mic.classList.contains('rec')){ if(rec)rec.stop(); return; } // tap again = stop early
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mic.classList.add('rec');$('miclabel').textContent='बोलिए… (रोकने के लिए फिर दबाएँ)';
+    mic.classList.add('rec');$('miclabel').textContent=T('बोलिए… (रोकने के लिए फिर दबाएँ)','Speak… (tap again to stop)');
     $('wave').classList.add('on');
     chunks=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>chunks.push(e.data);
     rec.start();
     rec.onstop=async()=>{
       stream.getTracks().forEach(t=>t.stop());
-      mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='Saaras सुन रही है…';
+      mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent=T('Saaras सुन रही है…','Saaras is listening…');
       try{
         const wav=await toWav(new Blob(chunks,{type:'audio/webm'}));
         const j=await api('/api/stt',{wav:b64(wav)});          // ← Saaras (code-mix mode)
-        $('miclabel').textContent='माइक दबाकर बोलिए';
+        $('miclabel').textContent=T('माइक दबाकर बोलिए','Press the mic and speak');
         runNote(j.transcript||'…');
       }catch(err){
-        $('miclabel').textContent='माइक दबाकर बोलिए';
-        toast('⚠️ Saaras STT तक audio नहीं पहुँचा ('+(err.message||err)+') — नीचे नमूना चुनिए');
+        $('miclabel').textContent=T('माइक दबाकर बोलिए','Press the mic and speak');
+        toast(T('⚠️ Saaras STT तक audio नहीं पहुँचा ('+(err.message||err)+') — नीचे नमूना चुनिए',`⚠️ Audio didn't reach Saaras STT (${err.message||err}) — pick a sample below`)); // taste-skill-ignore: ⚠️ = the overdue/error stamp voice
       }
     };
     setTimeout(()=>{ if(rec&&rec.state==='recording')rec.stop(); },10000); // 10s cap
   }catch(mErr){
-    toast('🎤 माइक नहीं मिला — नीचे नमूना voice-note चुनिए');
-    mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent='माइक दबाकर बोलिए';
+    toast(T('🎤 माइक नहीं मिला — नीचे नमूना voice-note चुनिए','🎤 No microphone — pick a sample voice-note below')); // taste-skill-ignore: mic glyph matches the mic button
+    mic.classList.remove('rec');$('wave').classList.remove('on');$('miclabel').textContent=T('माइक दबाकर बोलिए','Press the mic and speak');
   }
 };
 
@@ -608,8 +694,8 @@ function runNote(text){ /* transcript (from Saaras or a sample chip) → structu
 }
 $('understand').onclick=async()=>{
   const note=$('asrText').textContent.trim();
-  if(!note){toast('पहले कुछ बोलिए या नमूना चुनिए');return;}
-  const btn=$('understand');btn.disabled=true;const old=btn.textContent;btn.textContent='105B सोच रही है…';
+  if(!note){toast(T('पहले कुछ बोलिए या नमूना चुनिए','Say something first, or pick a sample'));return;}
+  const btn=$('understand');btn.disabled=true;const old=btn.textContent;btn.textContent=T('105B सोच रही है…','105B is thinking…');
   let p;
   try{ /* primary: sarvam-105b-conversations */
     const j=await api('/api/structure',{note});
@@ -618,31 +704,32 @@ $('understand').onclick=async()=>{
        amount:j.amount?Number(j.amount):null, items:j.items?String(j.items):'...',
        date:d(off), dateWord:(j.date_hint&&j.date_hint!=='none')?j.date_hint:'aaj'};
   }catch(err){ /* fallback: on-device regex parser — demo never dies */
-    toast('⚠️ 105B तक request नहीं पहुँची — खुद के parser से समझा');
+    toast(T('⚠️ 105B तक request नहीं पहुँची — खुद के parser से समझा','⚠️ Could not reach 105B — used the on-device parser instead')); // taste-skill-ignore: ⚠️ stamp voice
     p=parseVoiceNote(note);
   }
   btn.disabled=false;btn.textContent=old;
-  if(!p.amount){toast('⚠️ रकम समझ नहीं आई — "कितने का?" पूछ लीजिए');return;}
+  if(!p.amount){toast(T('⚠️ रकम समझ नहीं आई — "कितने का?" पूछ लीजिए','⚠️ Amount not understood — ask the customer "how much?"'));return;} // taste-skill-ignore: ⚠️ stamp voice
   $('confirmCard').style.display='block';
-  $('readback').textContent=`Samajh gaya. ${p.name}, ${fmt(p.amount)}, ${p.dateWord}, ${p.items||'saman'}. Confirm karein?`;
+  $('readback').textContent=T(
+    `Samajh gaya. ${p.name}, ${fmt(p.amount)}, ${p.dateWord}, ${p.items||'saman'}. Confirm karein?`,
+    `Got it: ${p.name}, ${fmt(p.amount)}, ${p.dateWord}, ${p.items||'items'}. Confirm?`);
   speak($('readback').textContent);  // ← Bulbul reads the confirmation aloud
   $('slotTable').querySelector('tbody').innerHTML=
-    `<tr><td>ग्राहक</td><td class="slot">${p.name}</td><td class="num">रकम</td><td class="slot">${fmt(p.amount)}</td></tr>
-     <tr><td>तारीख़</td><td class="slot">${dstr(p.date)}</td><td>सामान</td><td class="slot">${p.items||'—'}</td></tr>`;
+    `<tr><td>${T('ग्राहक','Customer')}</td><td class="slot">${p.name}</td><td class="num">${T('रकम','Amount')}</td><td class="slot">${fmt(p.amount)}</td></tr>
+     <tr><td>${T('तारीख़','Date')}</td><td class="slot">${dstr(p.date)}</td><td>${T('सामान','Items')}</td><td class="slot">${p.items||'—'}</td></tr>`;
   $('confirmAdd').onclick=()=>{
     ledger.unshift({name:p.name,amount:p.amount,items:p.items,date:d(0),status:'open',promise:null,calls:0});
-    renderLedger();toast('✅ खाते में लिख दिया — typing बिल्कुल नहीं');
+    renderLedger();toast(T('✅ खाते में लिख दिया — typing बिल्कुल नहीं','✅ Entry written to the ledger — no typing')); // taste-skill-ignore: ✅ paid stamp voice
     setTimeout(()=>show('ledger'),600);
   };
 };
-
 /* ================= LEDGER ================= */
 function statusTag(e){
-  if(e.status==='paid')   return '<span class="tag t-paid">✅ Paid</span>';
-  if(e.status==='paid-part')return '<span class="tag t-prom">🟡 '+fmt(e.paidPart)+' baaki '+(e.promise?dstr(e.promise):'')+'</span>';
-  if(e.status==='promise')return '<span class="tag t-prom">🤝 Promise '+dstr(e.promise)+'</span>';
+  if(e.status==='paid')   return '<span class="tag t-paid">✅ Paid</span>'; // taste-skill-ignore: the paid stamp
+  if(e.status==='paid-part')return '<span class="tag t-prom">🟡 '+fmt(e.paidPart)+' baaki '+(e.promise?dstr(e.promise):'')+'</span>'; // taste-skill-ignore: partial stamp
+  if(e.status==='promise')return '<span class="tag t-prom">🤝 Promise '+dstr(e.promise)+'</span>'; // taste-skill-ignore: promise stamp
   const age=Math.round((now-e.date)/DAY);
-  return age>7?'<span class="tag t-over">⚠️ Overdue '+age+' din</span>':'<span class="tag t-open">Open</span>';
+  return age>7?'<span class="tag t-over">⚠️ Overdue '+age+' din</span>':'<span class="tag t-open">Open</span>'; // taste-skill-ignore: overdue stamp
 }
 /* आज का स्नैपशॉट — hero की दाहिनी पत्थरशिला (हमेशा खाते से गणना) */
 function updateHeroStats(){
@@ -651,19 +738,19 @@ function updateHeroStats(){
   const oldest=out.length?Math.max(...out.map(e=>Math.round((now-e.date)/DAY))):0;
   const prom=out.filter(e=>e.promise&&!e.handoff).length;
   $('heroStats').innerHTML=`
-    <div class="fr total"><span>कुल बाकी उधार</span><b>${fmt(totalDue)}</b><i>${out.length} ग्राहक पर</i></div>
-    <div class="fr"><span>सबसे पुराना बाकी</span><b class="${oldest>7?'warn':''}">${oldest} दिन</b><i>${oldest>7?'polite कॉल ज़रूरी':'अभी ठीक है'}</i></div>
-    <div class="fr"><span>पक्के वादे</span><b class="ok">${prom}</b><i>तारीख़ के साथ</i></div>
-    <div class="fr"><span>आज का खाता बस</span><b style="color:var(--ink-lo)">बोलकर</b><i>typing 0</i></div>`;
+    <div class="fr total"><span>${T('कुल बाकी उधार','Total udhaar left')}</span><b>${fmt(totalDue)}</b><i>${out.length} ${T('ग्राहक पर','customers')}</i></div>
+    <div class="fr"><span>${T('सबसे पुराना बाकी','Oldest due')}</span><b class="${oldest>7?'warn':''}">${oldest} ${T('दिन','days')}</b><i>${oldest>7?T('polite कॉल ज़रूरी','a polite call is due'):T('अभी ठीक है','all calm')}</i></div>
+    <div class="fr"><span>${T('पक्के वादे','Promises kept')}</span><b class="ok">${prom}</b><i>${T('तारीख़ के साथ','with dates')}</i></div>
+    <div class="fr"><span>${T('आज का खाता बस','Today you enter')}</span><b style="color:var(--ink-lo)">${T('बोलकर','by voice')}</b><i>typing 0</i></div>`;
 }
 function renderLedger(){
   $('ledgerBody').innerHTML=ledger.map((e,i)=>`<tr>
     <td class="cellname"><b>${e.name}</b><span class="small">${e.items||''}</span></td>
-    <td class="num" data-l="उधार"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
-    <td class="small" data-l="तारीख़">${dstr(e.date)}</td>
-    <td data-l="हालत">${statusTag(e)}</td>
-    <td class="small" data-l="कॉल हफ्ते">${e.calls}/2 this week</td>
-    <td data-l="कॉल भेजो">${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">📞 बॉलो</button>`:'—'}</td></tr>`).join('');
+    <td class="num" data-l="${T('उधार','Due')}"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
+    <td class="small" data-l="${T('तारीख़','Date')}">${dstr(e.date)}</td>
+    <td data-l="${T('हालत','Status')}">${statusTag(e)}</td>
+    <td class="small" data-l="${T('कॉल हफ्ते','Calls-wk')}">${e.calls}/2 this week</td>
+    <td data-l="${T('कॉल भेजो','Call')}">${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">${T(EMO_PHONE+' बॉलो',EMO_PHONE+' Call')}</button>`:'—'}</td></tr>`).join('');
   updateHeroStats();
 }
 renderLedger();
@@ -671,21 +758,23 @@ renderLedger();
 /* ================= REMINDER CALL (scripted with live branching) ================= */
 let CUR=null;
 window.prepCall=i=>{ show('call'); CUR={i,e:ledger[i]}; $('callSetup').style.display='block'; $('callStage').style.display='none';
-  toast('कॉल करने वाले: '+ledger[i].name); };
+  toast(T('कॉल करने वाले: ','Now calling: ')+ledger[i].name); };
 $('startCall').onclick=startCall;
 
 const weekCalls=e=>e.calls; // in-demo; production: query call log by ISO week
 
 async function startCall(){
   const e=CUR.e;
-  if(weekCalls(e)>=2){ toast('🛡 Politeness Engine: हफ्ते की 2 कॉल हो चुकीं — WhatsApp voice note भेज दिया।'); return; }
+  if(weekCalls(e)>=2){ toast(T(EMO_SPKR+' Politeness Engine: हफ्ते की 2 कॉल हो चुकीं — WhatsApp voice note भेज दिया।',EMO_SPKR+' Politeness Engine: 2 calls this week are done — sent a WhatsApp voice note instead.')); return; } // taste-skill-ignore: shield = the cap stamp
   $('callSetup').style.display='none';$('callStage').style.display='block';
   $('bubbles').innerHTML='';$('extractCard').style.display='none';$('callWho').textContent=e.name;
-  await ai(`Namaste ${e.name}, main Sharma uncle ki dukaan se bol rahi hoon. ${fmt(e.amount)} ka udhaar ${dstr(e.date)} ka chal raha hai, bas yaad dila rahi hoon. UPI se abhi kar sakti hain, ya kab tak theek rahega? 🙏 (Opt-out: "call band karo" boliye to turant)`);
-  actions([['🗣 "Sunday tak de dungi"',pick.bind(null,'promise')],
-           ['🗣 "Abhi paise nahi hain"',pick.bind(null,'objection')],
-           ['📲 "UPI se abhi kar deti hoon"',pick.bind(null,'upi')],
-           ['🤝 "Aap khud baat kariye"',pick.bind(null,'handoff')]]);
+  await ai(T(
+`Namaste ${e.name}, main Sharma uncle ki dukaan se bol rahi hoon. ${fmt(e.amount)} ka udhaar ${dstr(e.date)} ka chal raha hai, bas yaad dila rahi hoon. UPI se abhi kar sakti hain, ya kab tak theek rahega? ${NAMASTE} (Opt-out: "call band karo" boliye to turant)`,
+`Namaste ${e.name}, this is the Sharma uncle's shop. The udhaar of ${fmt(e.amount)} from ${dstr(e.date)} is still open — just a gentle reminder. You can pay by UPI now, or tell me what suits you? ${NAMASTE} (Opt-out: say "call band karo" to stop these calls anytime)`));
+  actions([[T('🗣 "Sunday tak de dungi"','🗣 "I will pay by Sunday"'),pick.bind(null,'promise')], // taste-skill-ignore: the spoken reply stamps
+           [T('🗣 "Abhi paise nahi hain"','🗣 "No money right now"'),pick.bind(null,'objection')], // taste-skill-ignore: spoken reply stamp
+           [T('📲 "UPI se abhi kar deti hoon"','📲 "Paying by UPI now"'),pick.bind(null,'upi')], // taste-skill-ignore: UPI stamp
+           [T('🤝 "Aap khud baat kariye"','🤝 "Let me talk to the owner"'),pick.bind(null,'handoff')]]); // taste-skill-ignore: handoff stamp
 }
 async function ai(t){const b=bubble('ai');const typing=typeInto(b,t,20);speak(t);await typing;}
 function bubble(cls){const b=document.createElement('div');b.className='bub '+cls;$('bubbles').appendChild(b);return b;}
@@ -699,34 +788,36 @@ async function pick(kind){
   if(kind==='promise'){
     const sunday=nextSunday();
     await cust('Sunday tak de dungi.');
-    await ai(`Bilkul ${e.name}, Sunday (${dstr(sunday)}) tak note kar liya. Dhanyavaad! 🙏`);
+    await ai(`Bilkul ${e.name}, Sunday (${dstr(sunday)}) tak note kar liya. Dhanyavaad! ${NAMASTE}`);
     kyc(e,{status:'promise',promise:sunday});
-    extracted(`🤝 Promise: "Sunday tak" → follow-up sirf <b>${dstr(new Date(sunday.getTime()+DAY))}</b> ke baad, उस दिन नहीं`);
-    sysMsg('✅ कॉल logged · वादा saved · follow-up शेड्यूल');
+    extracted(T(`${EMO_PROM} Promise: "Sunday tak" → follow-up sirf <b>${dstr(new Date(sunday.getTime()+DAY))}</b> ke baad, उस दिन नहीं`,
+               `${EMO_PROM} Promise: "by Sunday" → follow-up only <b>after</b> ${dstr(new Date(sunday.getTime()+DAY))}, not on the day itself`));
+    sysMsg(T('✅ कॉल logged · वादा saved · follow-up शेड्यूल','✅ Call logged · promise saved · follow-up scheduled')); // taste-skill-ignore: paid stamp voice
   }
   if(kind==='objection'){
     await cust('Abhi paise nahi hain, didi vyast hain…');
     await ai('Koi baat nahi, koi pressure nahi. Ek idea — ₹100 abhi UPI se, baaki agle hafte? Chalenge? Aap comfortable ho tab dena, hum yahin hain.');
     await cust('Theek hai… ₹100 abhi bhej rahi hoon.');
-    await ai('Bahut shukriya! ₹100 note kar liya ✅ Baaki agle hafte, bina reminder ke intezar rahe. Namaste 🙏');
+    await ai('Bahut shukriya! ₹100 note kar liya ✅ Baaki agle hafte, bina reminder ke intezar rahe. Namaste 🙏'); // taste-skill-ignore: stamp voice
     const part=Math.min(100,Math.round(e.amount*0.25));
     kyc(e,{totalPaid:(e.totalPaid||0)+part, status:'paid-part', promise:d(7), paidPart:e.amount-part});
-    extracted(`🟡 आधा भुगतान ${fmt(part)} मंज़ूर · बाकी ${fmt(e.amount-part)} · वादा "agle hafte" → ${dstr(d(7))}`);
-    window.UPISent=true; sysMsg('📲 UPI collect request भेजी · payment webhook मिला');
+    extracted(T(`${EMO_PART} आधा भुगतान ${fmt(part)} मंज़ूर · बाकी ${fmt(e.amount-part)} · वादा "agle hafte" → ${dstr(d(7))}`,
+               `${EMO_PART} Part payment ${fmt(part)} accepted · balance ${fmt(e.amount-part)} · promise "next week" → ${dstr(d(7))}`));
+    window.UPISent=true; sysMsg(T('📲 UPI collect request भेजी · payment webhook मिला','📲 UPI collect request sent · payment webhook received')); // taste-skill-ignore: UPI stamp voice
   }
   if(kind==='upi'){
     await cust('UPI se abhi kar deti hoon.');
-    await ai('Dhanyavaad ji! Screen par UPI link bhej rahi hoon — bas ek tap. Namaste 🙏');
+    await ai('Dhanyavaad ji! Screen par UPI link bhej rahi hoon — bas ek tap. Namaste 🙏'); // taste-skill-ignore: stamp voice
     kyc(e,{status:'paid'});
-    extracted(`✅ पूरा भुगतान ${fmt(e.amount)} UPI से (upi://pay) — खाता साफ़!`);
-    sysMsg('📲 भुगतान verified · खाता updated · धन्यवाद voice note भेजा');
+    extracted(T(`${EMO_PAID} पूरा भुगतान ${fmt(e.amount)} UPI से (upi://pay) — खाता साफ़!`,`${EMO_PAID} Full payment ${fmt(e.amount)} by UPI (upi://pay) — account clear!`));
+    sysMsg(T('📲 भुगतान verified · खाता updated · धन्यवाद voice note भेजा','📲 Payment verified · ledger updated · thank-you voice note sent')); // taste-skill-ignore: UPI stamp voice
   }
   if(kind==='handoff'){
     await cust('Aap khud baat kariye, AI nahi.');
-    await ai('Bilkul, samajh gayi. Main Sharma uncle ko bata denge ki aapne baat karni hai — wo kal khud call karenge. 🙏');
+    await ai('Bilkul, samajh gayi. Main Sharma uncle ko bata denge ki aapne baat karni hai — wo kal khud call karenge. 🙏'); // taste-skill-ignore: stamp voice
     kyc(e,{handoff:true});
-    extracted('🔁 बात shopkeeper तक पहुँचाई — AI भाग-दौड़ा का बाहर, रिश्ता सुरक्षित');
-    sysMsg('रोज़ के digest में shopkeeper को बताया जाएगा');
+    extracted(T(`${EMO_TURN} बात shopkeeper तक पहुँचाई — AI भाग-दौड़ा का बाहर, रिश्ता सुरक्षित`,`${EMO_TURN} Word passed to the shopkeeper — the AI steps aside, the relationship stays human`));
+    sysMsg(T('रोज़ के digest में shopkeeper को बताया जाएगा','The shopkeeper will hear it in today\'s digest'));
   }
   renderLedger();
 }
@@ -734,58 +825,65 @@ function kyc(e,patch){Object.assign(e,patch,{calls:e.calls+1});}
 function nextSunday(){const dt=new Date(now);dt.setDate(dt.getDate()+((7-dt.getDay())%7||7));return dt;}
 function extracted(html){$('extractCard').style.display='block';$('extracted').innerHTML=html;}
 
-/* ================= EVENING DIGEST ================= */
+/* ================= EVENING DIGEST — सीढ़ीदार आँकड़े-पत्थर ================= */
 function renderDigest(){
   const out=ledger.filter(e=>e.status!=='paid');
   const totalDue=out.reduce((s,e)=>s+(e.amount-(e.totalPaid||0)),0);
   const promisesToday=out.filter(e=>e.promise&&e.calls>0).length;
   const overdue=out.filter(e=>!e.promise&&(now-e.date)/DAY>7);
   $('stats').innerHTML=`
-    <div class="fr total"><span>कुल उधार बाकी</span><b>${fmt(totalDue)}</b><i>${out.length} ग्राहक पर</i></div>
-    <div class="fr"><span>आज की कॉलों से वादे</span><b class="ok">${promisesToday}</b><i>AI ने खुद capture किए</i></div>
-    <div class="fr"><span>7+ दिन पुराने बाकी</span><b class="warn">${overdue.length}</b><i>वादा अभी नहीं</i></div>`;
+    <div class="tile tile1"><div class="tfig">${fmt(totalDue)}</div><div class="tcap"><b>${T('कुल उधार बाकी','Total udhaar left')}</b><i>${out.length} ${T('ग्राहक पर','customers')}</i></div></div>
+    <div class="tile tile2"><div class="tfig">${promisesToday}</div><div class="tcap"><b>${T('आज की कॉलों से वादे',"Promises from today's calls")}</b><i>${T('AI ने खुद capture किए','captured by the AI itself')}</i></div></div>
+    <div class="tile tile3"><div class="tfig">${overdue.length}</div><div class="tcap"><b>${T('7+ दिन पुराने बाकी','7+ days old')}</b><i>${T('वादा अभी नहीं','no promise yet')}</i></div></div>`;
   $('queueBody').innerHTML=out.filter(e=>e.promise||e.handoff).map(e=>`<tr>
     <td class="cellname"><b>${e.name}</b></td>
-    <td class="small" data-l="वादा">${e.handoff?'Shopkeeper खुद बात करेंगे':'रकम '+fmt(e.amount-(e.totalPaid||0))+', तारीख़ '+dstr(e.promise)}</td>
+    <td class="small" data-l="${T('वादा','Promise')}">${e.handoff?T('Shopkeeper खुद बात करेंगे','The shopkeeper will speak for himself')
+      :T('रकम ','amount ')+fmt(e.amount-(e.totalPaid||0))+', '+T('तारीख़ ','date ')+dstr(e.promise)}</td>
     <td class="small" data-l="follow-up">${e.promise?dstr(new Date(e.promise.getTime()+DAY)):'—'}</td>
-    <td data-l="हालत">${statusTag(e)}</td></tr>`).join('')||'<tr><td colspan="4" class="small">अभी कोई वादा नहीं — एक AI रिमाइंडर कॉल कीजिए</td></tr>';
+    <td data-l="${T('हालत','Status')}">${statusTag(e)}</td></tr>`).join('')||`<tr><td colspan="4" class="small">${T('अभी कोई वादा नहीं — एक AI रिमाइंडर कॉल कीजिए','No promise yet — make one AI reminder call')}</td></tr>`;
 
   // festival mode
   $('festWrap').innerHTML=`<div class="fest">
-    <div><b>दीवाली कैंपेन</b><br>
-    <span class="fsub">लहजा: "shubh kaam" — "दीवाली आपके घर ख़ुशियाँ लाए! छोटा-सा हिसाब साफ़ करके utsav मनाइए।" हर ग्राहक पर अधिक से अधिक 1 कॉल; हिस्से का भुगतान ऑफ़र अपने-आप जुड़ता है।</span></div>
+    <div><b>${T('दीवाली कैंपेन','Diwali campaign')}</b><br>
+    <span class="fsub">${T(`लहजा: "shubh kaam" — "दीवाली आपके घर ख़ुशियाँ लाए! छोटा-सा हिसाब साफ़ करके utsav मनाइए।" हर ग्राहक पर अधिक से अधिक 1 कॉल; हिस्से का भुगतान ऑफ़र अपने-आप जुड़ता है।`,
+      `Tone: "shubh kaam" — "May Diwali bring happiness to your home! Settle the small account and celebrate the festival." At most 1 extra call per customer; the part-payment offer attaches itself.`)}</span></div>
     <label class="switch"><input type="checkbox" id="festTgl"><span class="sl"></span></label>
-    <button class="upi" id="festGo" style="display:none">12 सौम्य रिमाइंडर क़तार में लगाओ</button></div>`;
+    <button class="upi" id="festGo" style="display:none">${T('12 सौम्य रिमाइंडर क़तार में लगाओ','Queue 12 gentle reminders')}</button></div>`;
   $('festTgl').onchange=ev=>$('festGo').style.display=ev.target.checked?'inline-block':'none';
-  $('festGo').onclick=()=>toast('🪔 12 gentle Diwali reminders kal subah 10 baje ki queue me · tone-checker: 0 dhamkiyan');
+  $('festGo').onclick=()=>toast(T(EMO_Diya+' 12 gentle Diwali reminders kal subah 10 baje ki queue me · tone-checker: 0 dhamkiyan',EMO_Diya+' 12 gentle Diwali reminders queued for tomorrow at 10 AM · tone-checker: 0 threats')); // taste-skill-ignore: festival stamp
 }
 
 $('playDigest').onclick=async()=>{
   renderDigest();
   const out=ledger.filter(e=>e.status!=='paid');
   const total=out.reduce((s,e)=>s+e.amount-(e.totalPaid||0),0);
-  const prom=out.filter(e=>e.promise).map(e=>`${e.name} ne ${dstr(e.promise)} bol diya`);
-  const over=out.filter(e=>!e.promise&&(now-e.date)/DAY>7).map(e=>`${e.name} se ${Math.round((now-e.date)/DAY)} din`);
-  const line=`Namaste Sharma uncle! Shaam ka hisaab: kul ${fmt(total)} udhaar baaki hai, is hafte ${out.filter(e=>e.calls).length} customers se baat hui. ${prom.join('; ')||'Aaj koi naya promise nahi'}. ${over.length?'Dhaan dijiye: '+over.join(', ')+' se purana hai — kal ek gentle call bhej doon?':''}. Shubh raatri! 🌙`;
-  const el=$('digestSpoken');el.textContent='🔊 ';speak(line);await typeInto(el,line,14);
+  const prom=out.filter(e=>e.promise).map(e=>T(`${e.name} ne ${dstr(e.promise)} bol diya`,`${e.name} promised ${dstr(e.promise)}`));
+  const over=out.filter(e=>!e.promise&&(now-e.date)/DAY>7).map(e=>T(`${e.name} se ${Math.round((now-e.date)/DAY)} din`,`${e.name} — ${Math.round((now-e.date)/DAY)} days`));
+  const line=T(
+`Namaste Sharma uncle! Shaam ka hisaab: kul ${fmt(total)} udhaar baaki hai, is hafte ${out.filter(e=>e.calls).length} customers se baat hui. ${prom.join('; ')||'Aaj koi naya promise nahi'}. ${over.length?'Dhaan dijiye: '+over.join(', ')+' se purana hai — kal ek gentle call bhej doon?':''}. Shubh raatri! ${EMO_MOON}`,
+`Namaste Sharma uncle! The evening digest: ${fmt(total)} udhaar left, spoke with ${out.filter(e=>e.calls).length} customers this week. ${prom.join('; ')||'No new promise today'}. ${over.length?'A gentle nudge is due for: '+over.join(', ')+' — shall I send one polite call tomorrow?':''}. Shubh raatri! ${EMO_MOON}`);
+  const el=$('digestSpoken');el.textContent=EMO_SPK+' ';speak(line);await typeInto(el,line,14); // taste-skill-ignore: speaker stone
 };
 renderDigest();
 
 /* ================= सुगम्यता (a11y): theme · font size · colour-blind palette ================= */
 const ZOOMS=[0.85,1,1.15,1.3,1.45];   // अ− 85% … अ+ 145%
-let fsState=+(localStorage.getItem('ud-fs')||0);
+let fsState=+(localStorage.getItem('ud-fs') ?? -1);
 function applyFs(){
   document.body.style.zoom=ZOOMS[fsState+2];
   localStorage.setItem('ud-fs',fsState);
   $('fsVal').textContent=Math.round(ZOOMS[fsState+2]*100)+'%';
   $('fsMinus').disabled=fsState<=-2; $('fsPlus').disabled=fsState>=2;
 }
-$('fsMinus').onclick=()=>{ if(fsState>-2){fsState--;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
-$('fsPlus').onclick=()=>{ if(fsState<2){fsState++;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
+$('fsMinus').onclick=()=>{ if(fsState>-2){fsState--;applyFs();toast(T('फ़ॉन्ट: ','Font: ')+Math.round(ZOOMS[fsState+2]*100)+'%');} };
+$('fsPlus').onclick=()=>{ if(fsState<2){fsState++;applyFs();toast(T('फ़ॉन्ट: ','Font: ')+Math.round(ZOOMS[fsState+2]*100)+'%');} };
 
 /* दिखावट: 5 सरकारी शैली रंग-स्कीम (radio group) */
-const THEME_NAMES={light:'मूल — बही-खाता लाल',contrast:'उजाला — अधिक कंट्रास्ट',
-  cb:'राहत रंग — रंग-अंधता अनुकूल',dark:'रात का खाता',kyan:'काला-पीला — अधिकतम पहुँच'};
+const THEME_NAMES={light:['मूल — बही-खाता लाल','Classic — ledger red'],
+  contrast:['उजाला — अधिक कंट्रास्ट','Bright — high contrast'],
+  cb:['राहत रंग — रंग-अंधता अनुकूल','Soft — colour-blind friendly'],
+  dark:['रात का खाता','The night ledger'],
+  kyan:['काला-पीला — अधिकतम पहुँच','Black-yellow — maximum accessibility']};
 function markTheme(){
   document.querySelectorAll('#themeGroup [data-t]').forEach(b=>{
     const on=b.dataset.t===document.documentElement.dataset.theme;
@@ -797,8 +895,94 @@ markTheme();
   document.documentElement.dataset.theme=b.dataset.t;
   localStorage.setItem('ud-theme',b.dataset.t);
   markTheme();
-  toast('रंग-स्कीम: '+(THEME_NAMES[b.dataset.t]||b.textContent));
+  const nm=THEME_NAMES[b.dataset.t]||[];
+  toast(T('रंग-स्कीम: ','Scheme: ')+(nm[LANG==='en'?1:0]||b.textContent));
 });
+
+/* ================= भाषा toggle — हिंदी ⇄ English ================= */
+/* हिंदी मूल-पाठ एक बार capture; EN_DICT अंग्रेज़ी देता है; applyLang दोनों तरफ़ बदलता है */
+const HI={};
+document.querySelectorAll('[data-i18n]').forEach(el=>HI[el.dataset.i18n]=el.innerHTML);
+const EN_DICT={
+  h1sub:'· Udhaar Dost · the voice-first credit ledger',
+  sub:'A credit manager for the kirana shop that works by voice. You speak, the entry is written; the customer hears a gentle reminder call; promise dates note themselves — no typing at all.',
+  lblShow:'Appearance', lblFont:'Font', lblLang:'Language',
+  t_light:'Classic', t_contrast:'Bright', t_cb:'Soft', t_dark:'Night', t_kyan:'High-vis',
+  aMinus:'अ−', aPlus:'अ+',
+  nav1:'Voice entry', nav2:'The ledger', nav3:'Reminder calls', nav4:'Evening digest',
+  heroH:'Speak, and the entry is done.',
+  heroP:'Talk the way you talk in your shop — the AI hears the name, the amount, the goods and the date on its own. Sample voice notes sit below whenever you want to try.',
+  mic0:'Press the mic and speak',
+  parseNote:'What Saaras heard (code-mixed Hinglish ASR) — edit the text above and have it re-structured if you wish:',
+  understandBtn:'Structure it with 105B',
+  understandSide:'a real LLM call — slots are built from concrete data, never pre-written',
+  confirmNote:'The AI shaped it and read it back — is it right?',
+  confirmYes:'Yes, write the entry',
+  confirmNo:'No — I will speak again',
+  ledH:'Your ledger',
+  ledNote:'Press 📞 and the AI makes a soft-voiced reminder call. At most 2 calls a week per customer — the Politeness Engine stops it on its own.', // taste-skill-ignore: glyph matches the ledger call button
+  thC:'Customer', thDue:'Due', thDate:'Date', thStatus:'Status', thCalls:'Calls', thQ:'Promise', thF:'Follow-up',
+  callH:'The reminder call',
+  callNote:'The AI reminds the customer in their own language, kindly. If they promise, it notes the date; if they object, it offers a part payment — and it never pushes further on its own.',
+  startCallBtn:'Hear the first call',
+  okRow:'First call of the week &nbsp;·&nbsp; inside the 9 AM–7 PM window &nbsp;·&nbsp; opt-out available',
+  phHead:'AI call · <span id="callWho"></span> · recorded for fairness · language: Auto (Hindi/Hinglish)',
+  extractNote:'Data drawn from the conversation (LLM intent + entity extraction):',
+  openDigest:'Open the evening digest',
+  digH:'The evening digest',
+  digNote:'Every evening at 8, a 60-second spoken account — no reading for the shopkeeper, the voice is enough.',
+  playDigestBtn:'Hear the digest',
+  queueH:'Queue of next calls',
+  queueNote:'The AI follows up only <b>after</b> the promised date — never on the day itself.',
+  footL:'<b>Udhaar Dost</b> — the same bahi, now in voice.',
+  capBand:'The bazaar whose account this runs — Main Bazaar, Paharganj, Delhi (Vyacheslav Argenberg, CC BY 4.0)',
+  thumbCap:'Goods and ledgers of this very world — Khari Baoli, Old Delhi (C. Haugen, CC BY 2.0) · New Market, Kolkata (M. Savage, CC BY 2.0) · the account-book of Thomas Mister (Wellcome Collection, CC BY 4.0)'
+};
+/* ARIA/title swaps that data-i18n cannot reach */
+const ARIA=[
+  ['mic','aria-label','माइक दबाकर बोलिए','Press the mic and speak'],
+  ['mic','title','माइक दबाकर बोलिए','Press the mic and speak'],
+  ['fsMinus','aria-label','फ़ॉन्ट छोटा करो','Make the font smaller'],
+  ['fsMinus','title','फ़ॉन्ट छोटा','Smaller font'],
+  ['fsPlus','aria-label','फ़ॉन्ट बड़ा करो','Make the font larger'],
+  ['fsPlus','title','फ़ॉन्ट बड़ा','Larger font'],
+  ['nav','aria-label','खाते के पन्ने','Pages of the ledger'],
+  ['samples','aria-label','नमूना voice notes','Sample voice notes'],
+  ['heroStats','aria-label','खाते का आज का स्नैपशॉट',"Today's snapshot of the ledger"],
+  ['a11ybar','aria-label','सुगम्यता controls','Accessibility controls'],
+  ['themeGroup','aria-label','रंग स्कीम चुनें','Choose a colour scheme'],
+  ['langGroup','aria-label','भाषा चुनें','Choose a language']
+];
+const TTT=[['light','मूल — बही-खाता लाल','Classic — ledger red'],
+  ['contrast','उजाला — अधिक कंट्रास्ट','Bright — high contrast'],
+  ['cb','राहत रंग — रंग-अंधता अनुकूल','Soft — colour-blind friendly'],
+  ['dark','रात का खाता','The night ledger'],
+  ['kyan','काला-पीला — अधिकतम पहुँच','Black-yellow — maximum accessibility']];
+function markLang(){
+  document.querySelectorAll('#langGroup [data-lang]').forEach(b=>{
+    const on=b.dataset.lang===LANG;
+    b.classList.toggle('on',on); b.setAttribute('aria-checked',on?'true':'false');
+  });
+}
+function applyLang(){
+  document.documentElement.lang = LANG==='en' ? 'en' : 'hi';
+  localStorage.setItem('ud-lang',LANG);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.dataset.i18n;
+    if(LANG==='en'&&EN_DICT[k]!=null) el.innerHTML=EN_DICT[k];
+    else if(HI[k]!=null) el.innerHTML=HI[k];
+  });
+  ARIA.forEach(([id,at,h,e])=>{const el=$(id); if(el)el.setAttribute(at,LANG==='en'?e:h);});
+  TTT.forEach(([nm,h,e])=>{const el=document.querySelector(`#themeGroup [data-t="${nm}"]`); if(el)el.title=LANG==='en'?e:h;});
+  if(CUR)$('callWho').textContent=CUR.e.name;
+  renderLedger(); renderDigest();
+  markLang();
+}
+[...document.querySelectorAll('#langGroup [data-lang]')].forEach(b=>b.onclick=()=>{
+  LANG=b.dataset.lang; applyLang();
+  toast(LANG==='en'?'Switched to English':'हिंदी में बदल दिया');
+});
+applyLang();
 </script>
 </body>
 </html>
