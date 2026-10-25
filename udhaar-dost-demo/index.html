@@ -9,9 +9,9 @@
 /* सुगम्यता preferences फिल्म शुरू होने से पहले लागू — theme का फ्लैश नहीं दिखता */
 (function(){try{
   var de=document.documentElement;
-  var t=localStorage.getItem('ud-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
-  if(t)de.dataset.theme=t;
-  if(localStorage.getItem('ud-cb')==='1')de.dataset.cb='1';
+  var t=localStorage.getItem('ud-theme');
+  if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  de.dataset.theme=t;
   var fs=+(localStorage.getItem('ud-fs')||0);
   document.addEventListener('DOMContentLoaded',function(){document.body.style.zoom=([0.85,1,1.15,1.3,1.45][fs+2]||1);});
 }catch(e){}})();
@@ -47,20 +47,36 @@
     --topen:#d9a54c; --tpaid:#a4917b; --tagbg:#28231c; --toastbg:#ecdfc6; --toastfg:#221e19;
     --nbf:#a4917b; --nbb:rgba(255,255,255,.05);
   }
+  /* उजाला — high-contrast light (gov-portal style) */
+  [data-theme="contrast"]{
+    --page-lo:#f0f0f0; --ink:#111; --ink-lo:#3a3a3a; --hair:#6a6a6a;
+    --card:#fff; --hi:#fff; --rule:#5c1010; --topen:#5c4200; --tpaid:#333;
+    --display:#4a0f0f; --num:#4a0f0f; --brick:#5c1010;
+  }
   /* राहत रंग — colour-blind safe (navy/amber family, protan-deutan friendly) */
-  [data-cb="1"]{
+  [data-theme="cb"]{
     --cloth:#0f3f66; --cloth-hi:#1a5487; --rule:#8a5a00; --brick:#b45309; --topen:#8a5a00;
   }
-  [data-theme="dark"][data-cb="1"]{
-    --cloth:#12293f; --cloth-hi:#1a3a5c; --rule:#d9a54c; --brick:#e3a15c; --topen:#d9a54c;
+  /* काला-पीला — maximum visibility (NIC "screen reader" theme) */
+  [data-theme="kyan"]{
+    --cloth:#000; --cloth-hi:#000; --gold:#ffd400; --gold-hi:#ffd400;
+    --page:#0b0b0b; --page-lo:#000; --ink:#ffd400; --ink-lo:#c7ab00;
+    --rule:#ffd400; --steel:#ffd400; --steel-hi:#ffd400; --turmeric:#ffd400;
+    --brick:#ffd400; --hair:#7a6a20;
+    --card:#000; --hi:#000; --display:#ffd400; --num:#ffd400;
+    --topen:#ffd400; --tpaid:#ffd400; --tagbg:#000;
+    --toastbg:#ffd400; --toastfg:#000; --nbf:#ffd400; --nbb:transparent;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
     font-family:'Noto Sans Devanagari','Segoe UI',system-ui,sans-serif;
-    background:var(--page-lo); color:var(--ink);
+    background-color:var(--page-lo); color:var(--ink);
+    background-image:radial-gradient(rgba(38,34,27,.055) 1px, transparent 1.5px);
+    background-size:22px 22px;
     font-size:15px; line-height:1.55; padding-bottom:64px;
   }
+  [data-theme="dark"] body{background-image:radial-gradient(rgba(236,223,198,.05) 1px, transparent 1.5px)}
   .display{font-family:'Tiro Devanagari Hindi',serif;font-weight:400}
 
   /* ---------- the book cover ---------- */
@@ -68,7 +84,17 @@
     background:var(--cloth); color:var(--gold-hi);
     padding:34px 22px 30px; text-align:left;
   }
-  .cover-in{max-width:960px;margin:0 auto;position:relative}
+  .cover-in{max-width:960px;margin:0 auto;position:relative;padding-right:64px}
+  /* दुकान की साइन-बोर्ड पट्टी — cover का खाली दाहिना कोना */
+  .signboard{
+    position:absolute; right:0; top:0; bottom:0;
+    writing-mode:vertical-rl; display:flex; flex-direction:column; gap:14px;
+    font-family:'Tiro Devanagari Hindi',serif; color:var(--gold);
+    font-size:16px; letter-spacing:1.5px; line-height:1;
+    border-left:1.5px dashed rgba(217,165,76,.45); padding-left:16px;
+  }
+  .signboard small{font-size:11px; color:rgba(217,165,76,.8); letter-spacing:2px}
+  @media(max-width:900px){.signboard{display:none}.cover-in{padding-right:0}}
   header h1{
     font-family:'Tiro Devanagari Hindi',serif; font-weight:400;
     font-size:clamp(34px,5.5vw,52px); line-height:1.1; letter-spacing:.5px;
@@ -103,6 +129,7 @@
     font-variant-numeric:tabular-nums;
   }
   .a11ybar .lbl{font-size:12px; color:var(--gold); margin-right:2px}
+  #themeGroup{display:flex; gap:6px; flex-wrap:wrap}
 
   /* ---------- leaf bookmark tabs + the ledger sheet ---------- */
   .book{max-width:960px;margin:0 auto;padding:0 16px}
@@ -146,8 +173,17 @@
   .screen-note{font-size:12.5px; color:var(--ink-lo); margin-bottom:10px; max-width:70ch}
 
   /* ---------- hero: the shopkeeper speaks ---------- */
-  .hero{display:flex; flex-direction:column; gap:18px; padding-top:8px}
+  .hero{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:30px; padding-top:8px; align-items:start}
+  .hero-speak{display:flex; flex-direction:column; gap:18px}
   .hero .display{font-size:clamp(30px,4.6vw,42px); line-height:1.18; max-width:20ch; color:var(--display)}
+  .hero p{max-width:56ch; color:var(--ink)}
+  .hero .folio{border-top-width:2px}
+  .hero .fr span{font-size:13.5px}
+  .hero .fr b{font-size:22px; min-width:88px}
+  .hero .fr i{font-size:11.5px; min-width:120px}
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr; gap:20px}
+  }
   .hero p{max-width:60ch; color:var(--ink)}
   .mic-btn{
     width:148px; height:148px; border-radius:50%; border:6px solid var(--page);
@@ -287,11 +323,28 @@
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
   h2.font{font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:22px; color:var(--cloth)}
 
+  /* mobile: tables stack into labelled rows (label left, value right) */
+  @media(max-width:700px){
+    table{display:block}
+    table thead{display:none}
+    table tbody{display:block}
+    table tr{display:block; margin:0; padding:13px 2px 10px; border-bottom:1px solid var(--hair)}
+    table td{display:flex; gap:10px; border:none; padding:3px 0}
+    td[data-l]::before{content:attr(data-l); color:var(--ink-lo); font-size:11.5px; min-width:58px; flex:none; padding-top:2px}
+    td[data-l].num{justify-content:space-between}
+    td[data-l="कॉल भेजो"]{justify-content:flex-end}
+    td.cellname{display:block}
+    td.cellname b{font-size:15.5px}
+    td.cellname .small{display:block; margin-top:1px}
+    table:last-child tr:last-child{border-bottom:none}
+    section{padding:22px 16px 8px 44px}
+  }
   @media (max-width:640px){
     section{padding:20px 16px 8px 44px}
     section::before{left:20px}
     .fr i{display:none}
     .mic-btn{width:130px;height:130px}
+    .hero .fr b{font-size:19px}
   }
   @media (prefers-reduced-motion: reduce){
     .wave span, .mic-btn.rec{animation:none}
@@ -310,12 +363,19 @@
     </div>
     <div class="a11ybar" role="group" aria-label="सुगम्यता controls">
       <span class="lbl">दिखावट</span>
-      <button id="themeBtn" aria-label="दिन-रात बदलो" title="दिन/रात खाता">🌙</button>
+      <div id="themeGroup" role="radiogroup" aria-label="रंग स्कीम चुनें">
+        <button data-t="light" role="radio" aria-checked="true" title="मूल — बही-खाता लाल जैसा है">मूल</button>
+        <button data-t="contrast" role="radio" aria-checked="false" title="उजाला — हरी-चिट्ठी चढ़ाई, अधिक कंट्रास्ट">उजाला</button>
+        <button data-t="cb" role="radio" aria-checked="false" title="राहत रंग — रंग-अंधता अनुकूल नीला/अंबर">राहत</button>
+        <button data-t="dark" role="radio" aria-checked="false" title="रात का खाता — dark">रात</button>
+        <button data-t="kyan" role="radio" aria-checked="false" title="काला-पीला — अधिकतम पहुँच (NIC शैली)">काला-पीला</button>
+      </div>
+      <span class="lbl">फ़ॉन्ट</span>
       <button id="fsMinus" aria-label="फ़ॉन्ट छोटा करो" title="फ़ॉन्ट छोटा">अ−</button>
       <span class="fsval" id="fsVal" aria-live="polite">100%</span>
       <button id="fsPlus" aria-label="फ़ॉन्ट बड़ा करो" title="फ़ॉन्ट बड़ा">अ+</button>
-      <button id="cbBtn" aria-label="राहत रंग — colour-blind friendly palette" title="रंग-अंधता अनुकूल: नीली-अंबर तालिका">राहत रंग</button>
     </div>
+    <div class="signboard" aria-hidden="true">शर्मा जनरल स्टोर<small>★ मेन बाज़ार · गली नं. 4 ★</small></div>
   </div>
 </header>
 
@@ -331,14 +391,17 @@
 <!-- ============ ROUTE 1: VOICE ENTRY ============ -->
 <section id="entry" class="active">
   <div class="hero card">
-    <h2 class="display">बोलो, खता हो गया।</h2>
-    <p>जैसे दुकान पर बोलते हैं, वैसे ही बोलिए — AI सुनकर नाम, रकम, सामान और तारीख़ अलग-अलग समझ लेता है। नीचे नमूने भी लगे हैं, ज़रूरत पड़े तो उनसे आज़माएँ।</p>
-    <div class="center">
-      <button id="mic" class="mic-btn" title="माइक दबाकर बोलिए" aria-label="माइक दबाकर बोलिए">🎤</button>
-      <div id="miclabel">माइक दबाकर बोलिए</div>
-      <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="hero-speak">
+      <h2 class="display">बोलो, खता हो गया।</h2>
+      <p>जैसे दुकान पर बोलते हैं, वैसे ही बोलिए — AI सुनकर नाम, रकम, सामान और तारीख़ अलग-अलग समझ लेता है। नीचे नमूने भी लगे हैं, ज़रूरत पड़े तो उनसे आज़माएँ।</p>
+      <div class="center">
+        <button id="mic" class="mic-btn" title="माइक दबाकर बोलिए" aria-label="माइक दबाकर बोलिए">🎤</button>
+        <div id="miclabel">माइक दबाकर बोलिए</div>
+        <div class="wave" id="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="chips" id="samples" aria-label="नमूना voice notes"></div>
     </div>
-    <div class="chips" id="samples" aria-label="नमूना voice notes"></div>
+    <aside class="folio mini" id="heroStats" aria-label="खाने का आज का स्नैपशॉट"></aside>
   </div>
   <div class="card" id="parseCard" style="display:none">
     <div class="screen-note">Saaras ने जो सुना (code-mixed Hinglish ASR) — चाहें तो ऊपर पाठ बदलकर दुबारा समझवाएँ:</div>
@@ -581,12 +644,27 @@ function statusTag(e){
   const age=Math.round((now-e.date)/DAY);
   return age>7?'<span class="tag t-over">⚠️ Overdue '+age+' din</span>':'<span class="tag t-open">Open</span>';
 }
+/* आज का स्नैपशॉट — hero की दाहिनी पत्थरशिला (हमेशा खाते से गणना) */
+function updateHeroStats(){
+  const out=ledger.filter(e=>e.status!=='paid');
+  const totalDue=out.reduce((s,e)=>s+(e.amount-(e.totalPaid||0)),0);
+  const oldest=out.length?Math.max(...out.map(e=>Math.round((now-e.date)/DAY))):0;
+  const prom=out.filter(e=>e.promise&&!e.handoff).length;
+  $('heroStats').innerHTML=`
+    <div class="fr total"><span>कुल बाकी उधार</span><b>${fmt(totalDue)}</b><i>${out.length} ग्राहक पर</i></div>
+    <div class="fr"><span>सबसे पुराना बाकी</span><b class="${oldest>7?'warn':''}">${oldest} दिन</b><i>${oldest>7?'polite कॉल ज़रूरी':'अभी ठीक है'}</i></div>
+    <div class="fr"><span>पक्के वादे</span><b class="ok">${prom}</b><i>तारीख़ के साथ</i></div>
+    <div class="fr"><span>आज का खाता बस</span><b style="color:var(--ink-lo)">बोलकर</b><i>typing 0</i></div>`;
+}
 function renderLedger(){
   $('ledgerBody').innerHTML=ledger.map((e,i)=>`<tr>
-    <td><b>${e.name}</b><br><span class="small">${e.items||''}</span></td>
-    <td class="num"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
-    <td class="small">${dstr(e.date)}</td><td>${statusTag(e)}</td><td class="small">${e.calls}/2 this week</td>
-    <td>${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">📞 बॉलो</button>`:'—'}</td></tr>`).join('');
+    <td class="cellname"><b>${e.name}</b><span class="small">${e.items||''}</span></td>
+    <td class="num" data-l="उधार"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
+    <td class="small" data-l="तारीख़">${dstr(e.date)}</td>
+    <td data-l="हालत">${statusTag(e)}</td>
+    <td class="small" data-l="कॉल हफ्ते">${e.calls}/2 this week</td>
+    <td data-l="कॉल भेजो">${e.status!=='paid'?`<button class="callbtn" onclick="prepCall(${i})">📞 बॉलो</button>`:'—'}</td></tr>`).join('');
+  updateHeroStats();
 }
 renderLedger();
 
@@ -667,9 +745,10 @@ function renderDigest(){
     <div class="fr"><span>आज की कॉलों से वादे</span><b class="ok">${promisesToday}</b><i>AI ने खुद capture किए</i></div>
     <div class="fr"><span>7+ दिन पुराने बाकी</span><b class="warn">${overdue.length}</b><i>वादा अभी नहीं</i></div>`;
   $('queueBody').innerHTML=out.filter(e=>e.promise||e.handoff).map(e=>`<tr>
-    <td><b>${e.name}</b></td><td class="small">${e.handoff?'Shopkeeper खुद बात करेंगे':'रकम '+fmt(e.amount-(e.totalPaid||0))+', तारीख़ '+dstr(e.promise)}</td>
-    <td class="small">${e.promise?dstr(new Date(e.promise.getTime()+DAY)):'—'}</td>
-    <td>${statusTag(e)}</td></tr>`).join('')||'<tr><td colspan="4" class="small">अभी कोई वादा नहीं — एक AI रिमाइंडर कॉल कीजिए</td></tr>';
+    <td class="cellname"><b>${e.name}</b></td>
+    <td class="small" data-l="वादा">${e.handoff?'Shopkeeper खुद बात करेंगे':'रकम '+fmt(e.amount-(e.totalPaid||0))+', तारीख़ '+dstr(e.promise)}</td>
+    <td class="small" data-l="follow-up">${e.promise?dstr(new Date(e.promise.getTime()+DAY)):'—'}</td>
+    <td data-l="हालत">${statusTag(e)}</td></tr>`).join('')||'<tr><td colspan="4" class="small">अभी कोई वादा नहीं — एक AI रिमाइंडर कॉल कीजिए</td></tr>';
 
   // festival mode
   $('festWrap').innerHTML=`<div class="fest">
@@ -704,27 +783,22 @@ function applyFs(){
 $('fsMinus').onclick=()=>{ if(fsState>-2){fsState--;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
 $('fsPlus').onclick=()=>{ if(fsState<2){fsState++;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
 
-(function initTheme(){  // set correct icon on load
-  const dark=document.documentElement.dataset.theme==='dark';
-  $('themeBtn').textContent=dark?'☀️':'🌙';
-})();
-$('themeBtn').onclick=()=>{
-  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
-  document.documentElement.dataset.theme=t;
-  localStorage.setItem('ud-theme',t);
-  $('themeBtn').textContent=t==='dark'?'☀️':'🌙';
-  toast(t==='dark'?'रात का खाता खुला 🌙':'दिन का खाता खुला');
-};
-(function initCb(){
-  if(document.documentElement.dataset.cb==='1')$('cbBtn').classList.add('on');
-})();
-$('cbBtn').onclick=()=>{
-  const v=document.documentElement.dataset.cb==='1'?'0':'1';
-  document.documentElement.dataset.cb=v;
-  localStorage.setItem('ud-cb',v);
-  $('cbBtn').classList.toggle('on',v==='1');
-  toast(v==='1'?'राहत रंग चालू — नीला/अंबर जोड़ा, रंग-अंधता अनुकूल':'राहत रंग बंद — बही-खाता लाल वापस');
-};
+/* दिखावट: 5 सरकारी शैली रंग-स्कीम (radio group) */
+const THEME_NAMES={light:'मूल — बही-खाता लाल',contrast:'उजाला — अधिक कंट्रास्ट',
+  cb:'राहत रंग — रंग-अंधता अनुकूल',dark:'रात का खाता',kyan:'काला-पीला — अधिकतम पहुँच'};
+function markTheme(){
+  document.querySelectorAll('#themeGroup [data-t]').forEach(b=>{
+    const on=b.dataset.t===document.documentElement.dataset.theme;
+    b.classList.toggle('on',on); b.setAttribute('aria-checked',on?'true':'false');
+  });
+}
+markTheme();
+[...document.querySelectorAll('#themeGroup [data-t]')].forEach(b=>b.onclick=()=>{
+  document.documentElement.dataset.theme=b.dataset.t;
+  localStorage.setItem('ud-theme',b.dataset.t);
+  markTheme();
+  toast('रंग-स्कीम: '+(THEME_NAMES[b.dataset.t]||b.textContent));
+});
 </script>
 </body>
 </html>

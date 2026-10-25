@@ -129,16 +129,22 @@ t('E5 human hand-off branch exists', () =>
 
 /* ============ F. Accessibility ============ */
 console.log('F. Accessibility');
-t('F1 toolbar present: theme / A− / A+ / fs% / colour-blind toggle', () => {
-  for (const id of ['themeBtn','fsMinus','fsVal','fsPlus','cbBtn'])
-    assert.ok(html.includes('id="'+id+'"'), id); });
+t('F1 toolbar present: 5-way theme group + अ− / A / अ+ + fs%', () => {
+  for (const id of ['themeGroup','fsMinus','fsVal','fsPlus'])
+    assert.ok(html.includes('id="'+id+'"'), id);
+  for (const t of ['data-t="light"','data-t="contrast"','data-t="cb"','data-t="dark"','data-t="kyan"'])
+    assert.ok(html.includes(t), t); });
 t('F2 dark theme is a full variable override', () =>
   assert.ok(html.includes('[data-theme="dark"]') && html.includes('--page:#221e19')));
-t('F3 colour-blind palette replaces maroon/red with navy/amber', () => {
-  const cbBlock = html.match(/\[data-cb="1"\]\{([^}]*)\}/);
-  assert.ok(cbBlock, 'cb block missing');
+t('F3 सरकारी शैली: उजाला + राहत + काला-पीला स्कीम available', () => {
+  assert.ok(html.includes('[data-theme="contrast"]'), 'high-contrast light');
+  const cbBlock = html.match(/\[data-theme="cb"\]\{([^}]*)\}/);
+  assert.ok(cbBlock, 'rahat block missing');
   assert.ok(cbBlock[1].includes('--cloth:#0f3f66'), 'navy cloth');
-  assert.ok(cbBlock[1].includes('--rule:#8a5a00'), 'amber margin rule'); });
+  assert.ok(cbBlock[1].includes('--rule:#8a5a00'), 'amber margin rule');
+  const ky = html.match(/\[data-theme="kyan"\]\{([^}]*)\}/);
+  assert.ok(ky && ky[1].includes('--page:#0b0b0b') && ky[1].includes('--ink:#ffd400'),
+    'NIC black-on-yellow theme'); });
 t('F4 font scale: 5 damping steps, none beyond 145%', () => {
   const z = html.match(/const ZOOMS=\[([^\]]*)\]/);
   const steps = z[1].split(',').map(Number);
@@ -147,7 +153,6 @@ t('F4 font scale: 5 damping steps, none beyond 145%', () => {
 t('F5 preferences persist (localStorage), theme applied pre-paint', () => {
   assert.ok(html.includes("localStorage.getItem('ud-theme')"));
   assert.ok(html.includes("localStorage.getItem('ud-fs')"));
-  assert.ok(html.includes("localStorage.getItem('ud-cb')"));
   assert.ok(html.indexOf('prefers-color-scheme: dark') > -1); });
 t('F6 status is never colour-only: every tag has glyph+text', () =>
   assert.ok(html.includes('✅ Paid') && html.includes('🤝 Promise') &&
