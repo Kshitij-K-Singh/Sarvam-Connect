@@ -79,15 +79,14 @@
     border-radius:0 6px 6px 6px; border:1px solid var(--hair);
     border-top:none; padding:0 0 28px; min-height:520px;
   }
-  section{display:none; padding:26px 26px 8px calc(26px)}
+  section{display:none; padding:26px 26px 8px 64px}
   section.active{display:block}
-  /* the red margin rule */
+  /* the red margin rule — lives in the gutter, never under content */
   section{position:relative}
   section::before{
     content:""; position:absolute; left:34px; top:0; bottom:0; width:1.5px;
     background:var(--rule); opacity:.75;
   }
-  section > *{margin-left:14px}
 
   /* inner panels: quiet ink-hairline sheets, not floating cards */
   .card{
@@ -240,9 +239,8 @@
   h2.font{font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:22px; color:var(--cloth)}
 
   @media (max-width:640px){
-    section{padding:20px 16px 8px}
-    section::before{left:22px}
-    section > *{margin-left:0}
+    section{padding:20px 16px 8px 44px}
+    section::before{left:20px}
     .fr i{display:none}
     .mic-btn{width:130px;height:130px}
   }
