@@ -5,7 +5,6 @@ services:
     name: udhaar-dost
     runtime: python
     plan: free
-    rootDir: udhaar-dost-demo
     buildCommand: pip install -r requirements.txt
     startCommand: python -X utf8 server.py    # utf8 matters: Devanagari reaches stdio
     healthCheckPath: /healthz

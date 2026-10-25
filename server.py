@@ -23,7 +23,7 @@ if sys.stderr and hasattr(sys.stderr, "reconfigure"):
 from sarvamai import SarvamAI
 
 STATIC = Path(__file__).parent
-ENV = Path(__file__).parent.parent / ".env"
+ENV = Path(__file__).parent / ".env"
 
 MIME = {
     ".html": "text/html; charset=utf-8",
@@ -190,7 +190,7 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     load_env(ENV)
     if not os.environ.get("SARVAM_API_KEY"):
-        raise SystemExit("SARVAM_API_KEY missing in ../.env")
+        raise SystemExit("SARVAM_API_KEY missing in .env")
     port = int(os.environ.get("PORT", "8000"))
     print(f"Udhaar Dost live on http://localhost:{port}  (Sarvam: Saaras STT + 105B-Convos + Bulbul TTS)")
     ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()

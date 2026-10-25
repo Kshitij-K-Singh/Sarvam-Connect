@@ -39,7 +39,7 @@ server.py (stdlib http.server, :8000)   ← key never leaves here
 
 ## Deploy on Render
 
-`render.yaml` at the repo root defines the web service (runtime: python, rootDir: udhaar-dost-demo).
+`render.yaml` at the repo root defines the web service (runtime: python, serving from the repo root).
 
 1. Render dashboard → **New → Blueprint** → pick this repo → it reads `render.yaml`.
 2. Set `SARVAM_API_KEY` when prompted (stored in Render, never in code).
