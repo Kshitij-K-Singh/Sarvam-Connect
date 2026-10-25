@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="उधार दोस्त — किराने की दुकान का आवाज़ वाला उधार-खाता। बोलकर एंट्री, पॉलिट AI रिमाइंडर कॉल, वादे का हिसाब।">
 <title>उधार दोस्त — Voice-First Credit Manager</title>
+<script>
+/* सुगम्यता preferences फिल्म शुरू होने से पहले लागू — theme का फ्लैश नहीं दिखता */
+(function(){try{
+  var de=document.documentElement;
+  var t=localStorage.getItem('ud-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  if(t)de.dataset.theme=t;
+  if(localStorage.getItem('ud-cb')==='1')de.dataset.cb='1';
+  var fs=+(localStorage.getItem('ud-fs')||0);
+  document.addEventListener('DOMContentLoaded',function(){document.body.style.zoom=([0.85,1,1.15,1.3,1.45][fs+2]||1);});
+}catch(e){}})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
@@ -21,6 +32,27 @@
     --page:#f6efdf; --page-lo:#efe5cf; --ink:#26221b; --ink-lo:#6f6354;
     --rule:#c24a3b; --steel:#1f5f5b; --steel-hi:#2b7a74; --turmeric:#d98e04;
     --brick:#a93226; --hair:#d8cbb2;
+    --card:#fffcf3; --hi:#ffffff; --display:var(--cloth); --num:var(--cloth);
+    --topen:#9a6200; --tpaid:#57534a; --tagbg:#fff; --toastbg:#26221b; --toastfg:#f6efdf;
+    --nbf:#6f6354; --nbb:rgba(0,0,0,.05);
+  }
+  /* रात का खाता — dark theme */
+  [data-theme="dark"]{
+    --cloth:#2a1012; --cloth-hi:#3a181b;
+    --gold:#c99b45; --gold-hi:#e8c36a;
+    --page:#221e19; --page-lo:#171411; --ink:#ecdfc6; --ink-lo:#a4917b;
+    --rule:#b86357; --steel:#24504b; --steel-hi:#57b3a4; --turmeric:#e59b1a;
+    --brick:#e58377; --hair:#3b352c;
+    --card:#1a1712; --hi:#28231c; --display:#e8c36a; --num:#e8c36a;
+    --topen:#d9a54c; --tpaid:#a4917b; --tagbg:#28231c; --toastbg:#ecdfc6; --toastfg:#221e19;
+    --nbf:#a4917b; --nbb:rgba(255,255,255,.05);
+  }
+  /* राहत रंग — colour-blind safe (navy/amber family, protan-deutan friendly) */
+  [data-cb="1"]{
+    --cloth:#0f3f66; --cloth-hi:#1a5487; --rule:#8a5a00; --brick:#b45309; --topen:#8a5a00;
+  }
+  [data-theme="dark"][data-cb="1"]{
+    --cloth:#12293f; --cloth-hi:#1a3a5c; --rule:#d9a54c; --brick:#e3a15c; --topen:#d9a54c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -55,6 +87,22 @@
     background:rgba(0,0,0,.14);
   }
   .stamp b{color:var(--gold-hi); font-weight:700}
+  /* सुगम्यता पट्टिका — gov-style controls */
+  .a11ybar{display:flex; gap:8px; align-items:center; margin-top:18px; flex-wrap:wrap}
+  .a11ybar button{
+    font-family:inherit; min-width:40px; cursor:pointer; font-size:13.5px;
+    background:rgba(0,0,0,.14); color:var(--gold-hi);
+    border:1.5px solid rgba(217,165,76,.55); border-radius:3px; padding:6px 11px;
+    font-variant-numeric:tabular-nums;
+  }
+  .a11ybar button:hover{background:rgba(0,0,0,.24)}
+  .a11ybar button:focus-visible{outline:2px solid var(--gold-hi); outline-offset:2px}
+  .a11ybar button.on{background:var(--gold); color:var(--cloth)}
+  .a11ybar .fsval{
+    font-size:12.5px; color:var(--gold); min-width:46px; text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .a11ybar .lbl{font-size:12px; color:var(--gold); margin-right:2px}
 
   /* ---------- leaf bookmark tabs + the ledger sheet ---------- */
   .book{max-width:960px;margin:0 auto;padding:0 16px}
@@ -65,8 +113,8 @@
   nav#nav::-webkit-scrollbar{display:none}
   nav#nav button{
     font-family:inherit; font-size:13.5px; font-weight:500; cursor:pointer;
-    color:#f0e4cd; background:rgba(0,0,0,.10);
-    border:none; border-bottom:none; border-radius:7px 7px 0 0;
+    color:var(--nbf); background:var(--nbb);
+    border:1px solid var(--hair); border-bottom:none; border-radius:7px 7px 0 0;
     padding:10px 15px 11px; white-space:nowrap;
   }
   nav#nav button.active{
@@ -99,7 +147,7 @@
 
   /* ---------- hero: the shopkeeper speaks ---------- */
   .hero{display:flex; flex-direction:column; gap:18px; padding-top:8px}
-  .hero .display{font-size:clamp(30px,4.6vw,42px); line-height:1.18; max-width:20ch; color:var(--cloth)}
+  .hero .display{font-size:clamp(30px,4.6vw,42px); line-height:1.18; max-width:20ch; color:var(--display)}
   .hero p{max-width:60ch; color:var(--ink)}
   .mic-btn{
     width:148px; height:148px; border-radius:50%; border:6px solid var(--page);
@@ -129,12 +177,12 @@
   .chip:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
 
   .asr{
-    font-family:inherit; background:#fffcf3; border:1px solid var(--hair);
+    font-family:inherit; background:var(--card); border:1px solid var(--hair);
     border-radius:3px; padding:11px 14px; min-height:46px; width:100%; font-size:15px;
     line-height:1.6;
   }
   .readback{
-    background:#fff; border-left:3px solid var(--steel); padding:13px 14px;
+    background:var(--hi); border-left:3px solid var(--steel); padding:13px 14px;
     font-size:15px; line-height:1.6; max-width:70ch;
   }
   .slot{font-weight:700; color:var(--steel)}
@@ -161,18 +209,19 @@
   .tag{
     display:inline-block; border:1.5px solid currentColor; border-radius:2px;
     padding:2.5px 8px; font-size:11.5px; font-weight:700; white-space:nowrap;
-    font-variant-numeric:tabular-nums;
+    font-variant-numeric:tabular-nums; background:var(--tagbg);
   }
-  .t-open{color:#9a6200; background:#fff}
-  .t-prom{color:var(--steel); background:#fff}
+  .t-open{color:var(--topen)}
+  .t-prom{color:var(--steel)}
   .t-over{color:var(--brick); transform:rotate(-1.5deg)}
-  .t-paid{color:#57534a; background:#efece4}
+  .t-paid{color:var(--tpaid); background:transparent}
   .callbtn{
     font-family:inherit; background:transparent; color:var(--cloth);
     border:1.5px solid var(--cloth); border-radius:3px; padding:6px 12px;
     font-weight:700; font-size:12.5px; cursor:pointer;
   }
   .callbtn:hover{background:var(--cloth); color:var(--gold-hi)}
+  [data-theme="dark"] .callbtn:hover{color:var(--page)}
   .callbtn:focus-visible{outline:2px solid var(--steel); outline-offset:2px}
 
   /* ---------- the phone ---------- */
@@ -203,7 +252,7 @@
   .fr span{flex:1; font-size:14.5px}
   .fr b{
     font-family:'Tiro Devanagari Hindi',serif; font-weight:400; font-size:26px;
-    font-variant-numeric:tabular-nums; text-align:right; color:var(--cloth); min-width:110px;
+    font-variant-numeric:tabular-nums; text-align:right; color:var(--num); min-width:110px;
   }
   .fr b.ok{color:var(--steel)}
   .fr b.warn{color:var(--brick)}
@@ -231,7 +280,7 @@
 
   .toast{
     position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-    background:var(--ink); color:#fff3; color:#f6efdf; padding:11px 20px;
+    background:var(--toastbg); color:var(--toastfg); padding:11px 20px;
     border-radius:3px; font-size:14px; display:none; z-index:9; max-width:92vw;
   }
   .center{display:flex; flex-direction:column; gap:12px}
@@ -258,6 +307,14 @@
     <div class="stamps">
       <span class="stamp"><b>★ LIVE</b> — Sarvam pipeline: Saaras STT → 105B-Convos → Bulbul TTS</span>
       <span class="stamp"><b>★ Politeness</b> — 2 calls/week · 9 AM–7 PM · No threats · No third-party disclosure</span>
+    </div>
+    <div class="a11ybar" role="group" aria-label="सुगम्यता controls">
+      <span class="lbl">दिखावट</span>
+      <button id="themeBtn" aria-label="दिन-रात बदलो" title="दिन/रात खाता">🌙</button>
+      <button id="fsMinus" aria-label="फ़ॉन्ट छोटा करो" title="फ़ॉन्ट छोटा">अ−</button>
+      <span class="fsval" id="fsVal" aria-live="polite">100%</span>
+      <button id="fsPlus" aria-label="फ़ॉन्ट बड़ा करो" title="फ़ॉन्ट बड़ा">अ+</button>
+      <button id="cbBtn" aria-label="राहत रंग — colour-blind friendly palette" title="रंग-अंधता अनुकूल: नीली-अंबर तालिका">राहत रंग</button>
     </div>
   </div>
 </header>
@@ -634,6 +691,40 @@ $('playDigest').onclick=async()=>{
   const el=$('digestSpoken');el.textContent='🔊 ';speak(line);await typeInto(el,line,14);
 };
 renderDigest();
+
+/* ================= सुगम्यता (a11y): theme · font size · colour-blind palette ================= */
+const ZOOMS=[0.85,1,1.15,1.3,1.45];   // अ− 85% … अ+ 145%
+let fsState=+(localStorage.getItem('ud-fs')||0);
+function applyFs(){
+  document.body.style.zoom=ZOOMS[fsState+2];
+  localStorage.setItem('ud-fs',fsState);
+  $('fsVal').textContent=Math.round(ZOOMS[fsState+2]*100)+'%';
+  $('fsMinus').disabled=fsState<=-2; $('fsPlus').disabled=fsState>=2;
+}
+$('fsMinus').onclick=()=>{ if(fsState>-2){fsState--;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
+$('fsPlus').onclick=()=>{ if(fsState<2){fsState++;applyFs();toast('फ़ॉन्ट: '+Math.round(ZOOMS[fsState+2]*100)+'%');} };
+
+(function initTheme(){  // set correct icon on load
+  const dark=document.documentElement.dataset.theme==='dark';
+  $('themeBtn').textContent=dark?'☀️':'🌙';
+})();
+$('themeBtn').onclick=()=>{
+  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=t;
+  localStorage.setItem('ud-theme',t);
+  $('themeBtn').textContent=t==='dark'?'☀️':'🌙';
+  toast(t==='dark'?'रात का खाता खुला 🌙':'दिन का खाता खुला');
+};
+(function initCb(){
+  if(document.documentElement.dataset.cb==='1')$('cbBtn').classList.add('on');
+})();
+$('cbBtn').onclick=()=>{
+  const v=document.documentElement.dataset.cb==='1'?'0':'1';
+  document.documentElement.dataset.cb=v;
+  localStorage.setItem('ud-cb',v);
+  $('cbBtn').classList.toggle('on',v==='1');
+  toast(v==='1'?'राहत रंग चालू — नीला/अंबर जोड़ा, रंग-अंधता अनुकूल':'राहत रंग बंद — बही-खाता लाल वापस');
+};
 </script>
 </body>
 </html>

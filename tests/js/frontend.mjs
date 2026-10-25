@@ -127,5 +127,31 @@ t('E4 part-payment exit is a real branch, not rhetoric', () =>
 t('E5 human hand-off branch exists', () =>
   assert.ok(html.includes("kind==='handoff'")));
 
+/* ============ F. Accessibility ============ */
+console.log('F. Accessibility');
+t('F1 toolbar present: theme / A− / A+ / fs% / colour-blind toggle', () => {
+  for (const id of ['themeBtn','fsMinus','fsVal','fsPlus','cbBtn'])
+    assert.ok(html.includes('id="'+id+'"'), id); });
+t('F2 dark theme is a full variable override', () =>
+  assert.ok(html.includes('[data-theme="dark"]') && html.includes('--page:#221e19')));
+t('F3 colour-blind palette replaces maroon/red with navy/amber', () => {
+  const cbBlock = html.match(/\[data-cb="1"\]\{([^}]*)\}/);
+  assert.ok(cbBlock, 'cb block missing');
+  assert.ok(cbBlock[1].includes('--cloth:#0f3f66'), 'navy cloth');
+  assert.ok(cbBlock[1].includes('--rule:#8a5a00'), 'amber margin rule'); });
+t('F4 font scale: 5 damping steps, none beyond 145%', () => {
+  const z = html.match(/const ZOOMS=\[([^\]]*)\]/);
+  const steps = z[1].split(',').map(Number);
+  assert.equal(steps.length, 5);
+  assert.equal(steps[0], 0.85); assert.equal(steps[4], 1.45); });
+t('F5 preferences persist (localStorage), theme applied pre-paint', () => {
+  assert.ok(html.includes("localStorage.getItem('ud-theme')"));
+  assert.ok(html.includes("localStorage.getItem('ud-fs')"));
+  assert.ok(html.includes("localStorage.getItem('ud-cb')"));
+  assert.ok(html.indexOf('prefers-color-scheme: dark') > -1); });
+t('F6 status is never colour-only: every tag has glyph+text', () =>
+  assert.ok(html.includes('✅ Paid') && html.includes('🤝 Promise') &&
+            html.includes('⚠️ Overdue') && html.includes('Open')));
+
 console.log(`\n${results.pass} passed, ${results.fail} failed`);
 process.exit(results.fail ? 1 : 0);
