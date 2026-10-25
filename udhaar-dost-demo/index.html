@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="उधार दोस्त — किराने की दुकान का आवाज़ वाला उधार-खाता। बोलकर एंट्री, पॉलिट AI रिमाइंडर कॉल, वादे का हिसाब।">
-<meta name="theme-color" content="#7a1f1f">
+<meta name="theme-color" content="#221e19">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23221e19'/%3E%3Ccircle cx='8' cy='8' r='5' fill='%23d98e04'/%3E%3C/svg%3E">
 <title>उधार दोस्त — Voice-First Credit Manager</title>
 <script>
 /* सुगम्यता + भाषा preferences फ़िल्म शुरू होने से पहले लागू — theme/language फ्लैश नहीं दिखता */
@@ -306,7 +307,7 @@
   .streetfig{position:relative; display:block; margin:0}
   .streetfig img{display:block; width:100%; height:clamp(220px,34vh,420px); object-fit:cover}
   .streetfig figcaption{
-    position:absolute; left:clamp(16px,2vw,28px); bottom:0; max-width:60ch;
+    position:absolute; left:clamp(20px,2.5vw,28px); bottom:0; max-width:60ch;
     background:rgba(24,16,12,.72); color:#fff;
     font-size:15.5px; line-height:1.45; padding:7px 14px;
   }
@@ -491,6 +492,7 @@
 <section id="ledger">
   <div class="card">
     <h2 class="font" data-i18n="ledH">आपका खाता</h2>
+    <p class="small" id="ledgerMeta" style="margin:-6px 0 10px" aria-live="polite"></p>
     <p class="screen-note" data-i18n="ledNote">📞 दबाओ तो AI धीमे स्वर में रिमाइंडर भेजेगा। हर ग्राहक पर हफ्ते में अधिक से अधिक 2 कॉल — Politeness Engine खुद रोक लेता है।</p><!-- taste-skill-ignore: 📞 is the call affordance glyph, referenced below -->
     <table><thead><tr>
       <th data-i18n="thC">ग्राहक</th><th class="num" data-i18n="thDue">उधार</th><th data-i18n="thDate">तारीख़</th><th data-i18n="thStatus">हालत</th><th data-i18n="thCalls">कॉल</th><th></th>
@@ -530,6 +532,7 @@
     <div class="tiles" id="stats"></div>
     <div class="card" style="margin-top:26px">
       <h3 class="font" style="font-size:clamp(18px,2vw,24px)" data-i18n="queueH">अगली कॉलों की कतार</h3>
+  <p class="small" id="queueMeta" style="margin:-8px 0 10px"></p>
       <p class="screen-note" data-i18n="queueNote">AI वादे की तारीख़ के <b>बाद</b> ही follow-up करता है — जिस दिन वादा था, उस दिन नहीं।</p>
       <table><thead><tr><th data-i18n="thC">ग्राहक</th><th data-i18n="thQ">वादा</th><th data-i18n="thF">follow-up</th><th data-i18n="thStatus">हालत</th></tr></thead><tbody id="queueBody"></tbody></table>
     </div>
@@ -744,6 +747,12 @@ function updateHeroStats(){
     <div class="fr"><span>${T('आज का खाता बस','Today you enter')}</span><b style="color:var(--ink-lo)">${T('बोलकर','by voice')}</b><i>typing 0</i></div>`;
 }
 function renderLedger(){
+  const open=ledger.filter(e=>e.status!=='paid');
+  const due=open.reduce((s,e)=>s+(e.amount-(e.totalPaid||0)),0);
+  const calls=ledger.reduce((s,e)=>s+e.calls,0);
+  $('ledgerMeta').textContent=T(
+    ledger.length+' ग्राहक · '+fmt(due)+' बाकी · हफ़्ते की '+calls+(calls===1?' कॉल':' कॉलें'),
+    ledger.length+' customers · '+fmt(due)+' left · '+calls+(calls===1?' call':' calls')+' this week');
   $('ledgerBody').innerHTML=ledger.map((e,i)=>`<tr>
     <td class="cellname"><b>${e.name}</b><span class="small">${e.items||''}</span></td>
     <td class="num" data-l="${T('उधार','Due')}"><b>${fmt(e.amount-e.totalPaid||e.amount)}</b></td>
@@ -835,7 +844,9 @@ function renderDigest(){
     <div class="tile tile1"><div class="tfig">${fmt(totalDue)}</div><div class="tcap"><b>${T('कुल उधार बाकी','Total udhaar left')}</b><i>${out.length} ${T('ग्राहक पर','customers')}</i></div></div>
     <div class="tile tile2"><div class="tfig">${promisesToday}</div><div class="tcap"><b>${T('आज की कॉलों से वादे',"Promises from today's calls")}</b><i>${T('AI ने खुद capture किए','captured by the AI itself')}</i></div></div>
     <div class="tile tile3"><div class="tfig">${overdue.length}</div><div class="tcap"><b>${T('7+ दिन पुराने बाकी','7+ days old')}</b><i>${T('वादा अभी नहीं','no promise yet')}</i></div></div>`;
-  $('queueBody').innerHTML=out.filter(e=>e.promise||e.handoff).map(e=>`<tr>
+  const queued=out.filter(e=>e.promise||e.handoff);
+  $('queueMeta').textContent=T(queued.length+(queued.length===1?' वादा':' वादे')+' · follow-up सब promised date के बाद',queued.length+(queued.length===1?' promise':' promises')+' · follow-ups all run after the promised date');
+  $('queueBody').innerHTML=queued.map(e=>`<tr>
     <td class="cellname"><b>${e.name}</b></td>
     <td class="small" data-l="${T('वादा','Promise')}">${e.handoff?T('Shopkeeper खुद बात करेंगे','The shopkeeper will speak for himself')
       :T('रकम ','amount ')+fmt(e.amount-(e.totalPaid||0))+', '+T('तारीख़ ','date ')+dstr(e.promise)}</td>

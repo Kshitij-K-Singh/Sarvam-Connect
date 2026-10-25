@@ -25,6 +25,20 @@ from sarvamai import SarvamAI
 STATIC = Path(__file__).parent
 ENV = Path(__file__).parent.parent / ".env"
 
+MIME = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".woff2": "font/woff2",
+}
+
 _tts_cache: dict[str, str] = {}  # text -> data URI
 _client: SarvamAI | None = None
 
@@ -109,16 +123,44 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _static(self, url_path: str) -> bool:
+        """Serve a file from the demo folder — whitelisted types, no path traversal."""
+        rel = url_path.lstrip("/")
+        suffix = Path(rel).suffix.lower()
+        if suffix not in MIME:
+            return False
+        try:
+            target = (STATIC / rel).resolve()
+            target.relative_to(STATIC.resolve())   # escapes the folder -> refuse
+        except (OSError, ValueError):
+            return False
+        if not target.is_file():
+            return False
+        try:
+            body = target.read_bytes()
+        except OSError:
+            return False
+        self.send_response(200)
+        self.send_header("Content-Type", MIME[suffix])
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "public, max-age=3600")
+        self.end_headers()
+        self.wfile.write(body)
+        return True
+
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
+        path = self.path.split("?", 1)[0]
+        if path in ("/", "/index.html"):
             page = (STATIC / "index.html").read_bytes()
             self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", MIME[".html"])
             self.send_header("Content-Length", str(len(page)))
             self.end_headers()
             self.wfile.write(page)
-        elif self.path == "/healthz":          # Render health check
+        elif path == "/healthz":          # Render health check
             self._json({"ok": True})
+        elif self._static(path):
+            pass
         else:
             self._json({"error": "not found"}, 404)
 

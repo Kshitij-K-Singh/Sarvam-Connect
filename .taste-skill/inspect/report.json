@@ -1,6 +1,6 @@
 {
- "url": "udhaar-dost-demo\\index.html",
- "at": "2026-10-25T13:51:44.587Z",
+ "url": "http://localhost:8000/",
+ "at": "2026-10-25T14:14:29.230Z",
  "allow": [],
  "viewports": [
   {
@@ -720,10 +720,10 @@
       "media": 1,
       "middle": 0,
       "heading": null,
-      "left": 30,
-      "right": 250,
-      "textLeft": 30,
-      "textRight": 250,
+      "left": 34,
+      "right": 246,
+      "textLeft": 34,
+      "textRight": 246,
       "fullBleed": true,
       "footer": false,
       "hero": true,
@@ -1108,10 +1108,10 @@
       "media": 1,
       "middle": 0,
       "heading": null,
-      "left": 30,
-      "right": 14,
-      "textLeft": 30,
-      "textRight": 14,
+      "left": 34,
+      "right": 40,
+      "textLeft": 34,
+      "textRight": 40,
       "fullBleed": true,
       "footer": false,
       "hero": false,
@@ -1151,13 +1151,7 @@
       "firstScreen": true
      }
     ],
-    "edgeText": [
-     {
-      "text": "बाज़ार जिसका हिसाब यहाँ चलता है — मुख्य बाज़ार, पह",
-      "side": "right",
-      "px": 14
-     }
-    ],
+    "edgeText": [],
     "edges": [
      {
       "x": 18,
@@ -1198,13 +1192,6 @@
    "width": 1440,
    "message": "No video anywhere on the page.",
    "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
-  },
-  {
-   "level": "WARN",
-   "id": "edge-text",
-   "width": 390,
-   "message": "1 text block(s) sit 12–15px from the phone's edge: \"बाज़ार जिसका हिसाब यहाँ चलता ह\" (14px)",
-   "fix": "The page margin is 16–20px on a phone; the header and the corner labels sit on it too."
   }
  ],
  "images": [
